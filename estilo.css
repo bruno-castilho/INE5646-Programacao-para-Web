@@ -1,0 +1,101 @@
+* {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Cabeçalho */
+header {
+    border-bottom: 1px solid grey;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+}
+
+header img {
+    height: 60px;
+    margin-right: 20px;
+}
+
+header p {
+    font-size: 12px;
+    color: #333;
+}
+
+/* Menu */
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid grey;
+}
+
+.menu button {
+    padding: 10px 20px;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+}
+
+.menu button.main {
+    color: blueviolet;
+    border: 1px solid blueviolet;
+    background-color: white;
+}
+
+.menu button.mais {
+    background-color: blueviolet;
+    color: white;
+    font-size: 20px;
+    margin-right: 130px;
+}
+
+.menu button.run {
+    background-color: blueviolet;
+    color: white;
+    font-size: 20px;
+}
+
+/* Container principal */
+.container {
+    display: flex;
+    height: calc(100vh - 150px); 
+}
+
+/* Editor */
+.editor {
+    flex: 1;
+    padding: 20px;
+    border-right: 1px solid grey;
+}
+
+.editor textarea {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    resize: none;
+    outline: none;
+}
+
+/* Área de saída */
+.saida {
+    flex: 1;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.saida pre {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    overflow: auto;
+}
