@@ -1,17 +1,32 @@
 import styled from 'styled-components'
 
+export const PageContent = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`
+
 export const Menu = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
   border-bottom: 1px solid grey;
+  background-color: #f0f0f0;
+  height: 50px;
 
   button {
     padding: 10px 20px;
     font-size: 15px;
     border: none;
     cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
+
+  button:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
   }
 `
 
@@ -36,7 +51,7 @@ export const RunButton = styled.button`
 
 export const Container = styled.div`
   display: flex;
-  height: calc(100vh - 150px);
+  flex: 1;
 `
 
 export const Editor = styled.div`
@@ -51,8 +66,10 @@ export const Editor = styled.div`
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
     border: 1px solid #ccc;
+    border-radius: 4px;
     resize: none;
     outline: none;
+    background-color: #fff;
   }
 `
 
@@ -69,6 +86,7 @@ export const Output = styled.div`
     font-size: 14px;
     background-color: #fff;
     border: 1px solid #ccc;
+    border-radius: 4px;
     overflow: auto;
   }
 `

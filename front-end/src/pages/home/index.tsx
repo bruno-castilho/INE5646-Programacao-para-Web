@@ -5,12 +5,13 @@ import {
   Menu,
   MoreFileButton,
   Output,
+  PageContent,
   RunButton,
 } from './styles'
 
 export function Home() {
   return (
-    <>
+    <PageContent>
       <Menu>
         <FileButton className="main">main.php</FileButton>
         <MoreFileButton className="mais">+</MoreFileButton>
@@ -28,6 +29,6 @@ export function Home() {
           <pre id="resultado">Aqui aparecerá o resultado do código...</pre>
         </Output>
       </Container>
-    </>
+    </PageContent>
   )
 }
