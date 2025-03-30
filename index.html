@@ -4,28 +4,72 @@
     <title>Compilador PHP Online</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="estilo.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <header>
         <img src="./imagens/logoufsc.png" alt="Logo UFSC">
-        <p>Compilador de Linguagem PHP</p>
+        <h1>Compilador de Linguagem PHP</h1>
+        <nav>
+            <ul>
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#objetivos">Objetivos</a></li>
+                <li><a href="#contato">Contato</a></li>
+                <li><a href="DOM.html">DOM do Projeto</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <div class="menu">
-        <button class="main">main.php</button>
-        <button class="mais">+</button>
-        <button class="run">Run</button>
+    <div class="main-container">
+        <aside class="sidebar">
+            <h3>Informações do Projeto</h3>
+            <section id="sobre">
+                <h4>Sobre o Projeto</h4>
+                <p>Compilador PHP online desenvolvido como projeto acadêmico.</p>
+            </section>
+            <section id="objetivos">
+                <h4>Objetivos</h4>
+                <p>Criar uma ferramenta para compilação e execução de código PHP diretamente no navegador.</p>
+            </section>
+            <section>
+                <h4>Disciplina</h4>
+                <p><a href="https://cco.ufsc.br" target="_blank">Desenvolvimento Web</a></p>
+            </section>
+            <section>
+                <h4>Integrantes</h4>
+                <ul>
+                    <li>Bruno da Silva Castilho</li>
+                    <li>Lucas Tomio Schwochow</li>
+                </ul>
+            </section>
+            <section>
+                <h4>Repositório</h4>
+                <p><a href=https://github.com/bruno-castilho/INE5646-Programacao-para-Web" target="_blank">GitHub do Projeto</a></p>
+            </section>
+        </aside>
+
+        <div class="content-area">
+            <div class="menu">
+                <button class="main">main.php</button>
+                <button class="mais">+</button>
+                <button class="run">Run</button>
+            </div>
+
+            <div class="editor-container">
+                <div class="editor">
+                    <textarea id="codigo" placeholder="Digite seu código PHP aqui..."></textarea>
+                </div>
+                <div class="saida">
+                    <pre id="resultado">Aqui aparecerá o resultado do código...</pre>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-        <div class="editor">
-            <textarea id="codigo" placeholder="Digite seu código PHP aqui..."></textarea>
-        </div>
-        <div class="saida">
-            <pre id="resultado">Aqui aparecerá o resultado do código...</pre>
-        </div>
-    </div>
-
-    
+    <footer>
+        <address id="contato">
+            <p>Universidade Federal de Santa Catarina</p>
+        </address>
+    </footer>
 </body>
 </html>
