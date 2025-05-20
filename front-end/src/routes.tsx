@@ -8,16 +8,6 @@ import { BeforeLayout } from './layouts/BeforeLayout'
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <BeforeLayout />,
-    children: [
-      {
-        path: '/login',
-        element: <Login />,
-      },
-    ],
-  },
-  {
-    path: '/',
     element: <DefaultLayout />,
     children: [
       {
@@ -31,6 +21,16 @@ export const router = createBrowserRouter([
       {
         path: '/dom',
         element: <Dom />,
+      },
+    ],
+  },
+  {
+    path: '/',
+    element: <BeforeLayout />,
+    children: [
+      {
+        path: '/login',
+        element: <Login />,
       },
     ],
   },
