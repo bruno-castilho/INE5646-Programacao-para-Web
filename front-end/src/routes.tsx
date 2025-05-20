@@ -2,8 +2,20 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { DefaultLayout } from './layouts/DefaultLayout'
 import { Home } from './pages/home'
 import { Dom } from './pages/dom'
+import { Login } from './pages/login'
+import { BeforeLayout } from './layouts/BeforeLayout'
 
 export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <BeforeLayout />,
+    children: [
+      {
+        path: '/login',
+        element: <Login />,
+      },
+    ],
+  },
   {
     path: '/',
     element: <DefaultLayout />,
@@ -19,10 +31,6 @@ export const router = createBrowserRouter([
       {
         path: '/dom',
         element: <Dom />,
-      },
-      {
-        path: '*',
-        element: <h1>Página não encontrada</h1>,
       },
     ],
   },
