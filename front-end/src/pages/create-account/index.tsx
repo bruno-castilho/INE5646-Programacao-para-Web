@@ -6,8 +6,69 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+
+export const CreateAccountFormSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(1, { message: 'Digite um nome' })
+      .regex(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/, {
+        message: 'O nome deve conter apenas letras',
+      }),
+
+    lastname: z
+      .string()
+      .trim()
+      .min(1, { message: 'Digite um sobrenome' })
+      .regex(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/, {
+        message: 'O sobrenome deve conter apenas letras',
+      }),
+
+    email: z.string().trim().email({ message: 'E-mail inválido' }),
+
+    password: z
+      .string()
+      .trim()
+      .min(8, { message: 'A senha deve ter no mínimo 8 caracteres' })
+      .regex(/(?=.*[A-Z])/, {
+        message: 'A senha deve conter pelo menos uma letra maiúscula',
+      })
+      .regex(/(?=.*[0-9])/, {
+        message: 'A senha deve conter pelo menos um número',
+      })
+      .regex(/(?=.*[!@#$%^&*(),.?":{}|<>])/, {
+        message: 'A senha deve conter pelo menos um símbolo especial',
+      }),
+
+    repeat_password: z
+      .string()
+      .trim()
+      .min(1, { message: 'Este campo não pode ficar vazio' }),
+  })
+  .refine((data) => data.password === data.repeat_password, {
+    path: ['repeat_password'],
+    message: 'As senhas não coincidem',
+  })
+
+type CreateAccountFormType = z.infer<typeof CreateAccountFormSchema>
 
 export function CreateAccount() {
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = useForm<CreateAccountFormType>({
+    resolver: zodResolver(CreateAccountFormSchema),
+  })
+
+  function handleSubmitForm(data: CreateAccountFormType) {
+    console.log(data)
+  }
+
   return (
     <>
       <Typography component="h1" variant="h4">
@@ -15,7 +76,7 @@ export function CreateAccount() {
       </Typography>
       <Box
         component="form"
-        noValidate
+        onSubmit={handleSubmit(handleSubmitForm)}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -29,12 +90,13 @@ export function CreateAccount() {
             size="small"
             id="name"
             type="name"
-            name="name"
-            autoComplete="name"
             autoFocus
             required
             fullWidth
             variant="outlined"
+            error={!!errors.name}
+            helperText={errors.name?.message ?? ''}
+            {...register('name')}
           />
         </FormControl>
         <FormControl>
@@ -43,12 +105,13 @@ export function CreateAccount() {
             size="small"
             id="lastname"
             type="lastname"
-            name="lastname"
-            autoComplete="lastname"
             autoFocus
             required
             fullWidth
             variant="outlined"
+            error={!!errors.lastname}
+            helperText={errors.lastname?.message ?? ''}
+            {...register('lastname')}
           />
         </FormControl>
         <FormControl>
@@ -57,46 +120,55 @@ export function CreateAccount() {
             size="small"
             id="email"
             type="email"
-            name="email"
             placeholder="your@email.com"
-            autoComplete="email"
             autoFocus
             required
             fullWidth
             variant="outlined"
+            error={!!errors.email}
+            helperText={errors.email?.message ?? ''}
+            {...register('email')}
           />
         </FormControl>
         <FormControl>
           <FormLabel htmlFor="password">Senha</FormLabel>
           <TextField
             size="small"
-            name="password"
             placeholder="••••••"
             type="password"
             id="password"
-            autoComplete="current-password"
             autoFocus
             required
             fullWidth
             variant="outlined"
+            error={!!errors.password}
+            helperText={errors.password?.message ?? ''}
+            {...register('password')}
           />
         </FormControl>
         <FormControl>
-          <FormLabel htmlFor="password">Repetir senha</FormLabel>
+          <FormLabel htmlFor="repeat_password">Repetir senha</FormLabel>
           <TextField
             size="small"
-            name="password"
             placeholder="••••••"
-            type="password"
-            id="password"
-            autoComplete="current-password"
+            type="repeat_password"
+            id="repeat_password"
             autoFocus
             required
             fullWidth
             variant="outlined"
+            error={!!errors.repeat_password}
+            helperText={errors.repeat_password?.message ?? ''}
+            {...register('repeat_password')}
           />
         </FormControl>
-        <Button type="submit" size="small" fullWidth variant="contained">
+        <Button
+          type="submit"
+          size="small"
+          fullWidth
+          variant="contained"
+          disabled={isSubmitting}
+        >
           CRIAR
         </Button>
         <Button
