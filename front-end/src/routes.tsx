@@ -4,6 +4,7 @@ import { Home } from './pages/home'
 import { Dom } from './pages/dom'
 import { Login } from './pages/login'
 import { BeforeLayout } from './layouts/BeforeLayout'
+import { CreateAccount } from './pages/create-account'
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,16 @@ export const router = createBrowserRouter([
       {
         path: '/login',
         element: <Login />,
+      },
+    ],
+  },
+  {
+    path: '/',
+    element: <BeforeLayout />,
+    children: [
+      {
+        path: '/cadastrar',
+        element: <CreateAccount />,
       },
     ],
   },

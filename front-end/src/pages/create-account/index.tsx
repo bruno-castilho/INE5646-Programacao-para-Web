@@ -1,32 +1,17 @@
 import {
   Box,
   Button,
-  Divider,
   FormControl,
   FormLabel,
-  Link,
   TextField,
   Typography,
 } from '@mui/material'
 
-import { useState } from 'react'
-import ForgotPassword from '../../components/ForgotPassword'
-
-export function Login() {
-  const [open, setOpen] = useState(false)
-
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
-
-  const handleClose = () => {
-    setOpen(false)
-  }
-
+export function CreateAccount() {
   return (
     <>
       <Typography component="h1" variant="h4">
-        Fazer login
+        Criar conta
       </Typography>
       <Box
         component="form"
@@ -38,6 +23,34 @@ export function Login() {
           gap: 2,
         }}
       >
+        <FormControl>
+          <FormLabel htmlFor="name">Nome</FormLabel>
+          <TextField
+            size="small"
+            id="name"
+            type="name"
+            name="name"
+            autoComplete="name"
+            autoFocus
+            required
+            fullWidth
+            variant="outlined"
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="lastname">Sobrenome</FormLabel>
+          <TextField
+            size="small"
+            id="lastname"
+            type="lastname"
+            name="lastname"
+            autoComplete="lastname"
+            autoFocus
+            required
+            fullWidth
+            variant="outlined"
+          />
+        </FormControl>
         <FormControl>
           <FormLabel htmlFor="email">Email</FormLabel>
           <TextField
@@ -68,28 +81,33 @@ export function Login() {
             variant="outlined"
           />
         </FormControl>
-        <ForgotPassword open={open} handleClose={handleClose} />
+        <FormControl>
+          <FormLabel htmlFor="password">Repetir senha</FormLabel>
+          <TextField
+            size="small"
+            name="password"
+            placeholder="••••••"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            autoFocus
+            required
+            fullWidth
+            variant="outlined"
+          />
+        </FormControl>
         <Button type="submit" size="small" fullWidth variant="contained">
-          Entrar
+          CRIAR
         </Button>
-        <Link
-          component="button"
-          type="button"
-          onClick={handleClickOpen}
-          variant="body2"
-          sx={{ alignSelf: 'center' }}
+        <Button
+          type="submit"
+          size="small"
+          fullWidth
+          variant="contained"
+          color="secondary"
         >
-          Esqueceu sua senha?
-        </Link>
-      </Box>
-      <Divider>ou</Divider>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography sx={{ textAlign: 'center' }}>
-          Não tem uma conta?{' '}
-          <Link href="/" variant="body2" sx={{ alignSelf: 'center' }}>
-            Inscrever-se
-          </Link>
-        </Typography>
+          FAZER LOGIN
+        </Button>
       </Box>
     </>
   )
