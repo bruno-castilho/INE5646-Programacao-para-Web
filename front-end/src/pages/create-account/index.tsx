@@ -54,18 +54,18 @@ export const CreateAccountFormSchema = z
     message: 'As senhas não coincidem',
   })
 
-type CreateAccountFormType = z.infer<typeof CreateAccountFormSchema>
+type CreateAccountFormSchemaType = z.infer<typeof CreateAccountFormSchema>
 
 export function CreateAccount() {
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<CreateAccountFormType>({
+  } = useForm<CreateAccountFormSchemaType>({
     resolver: zodResolver(CreateAccountFormSchema),
   })
 
-  function handleSubmitForm(data: CreateAccountFormType) {
+  function handleSubmitForm(data: CreateAccountFormSchemaType) {
     console.log(data)
   }
 
