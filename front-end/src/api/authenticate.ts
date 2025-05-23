@@ -41,4 +41,10 @@ export class Authenticate {
 
     return response.data
   }
+
+  static async logged(): Promise<{ user: User; message: string }> {
+    const response = await api.get('/authenticate/logged')
+
+    return response.data
+  }
 }

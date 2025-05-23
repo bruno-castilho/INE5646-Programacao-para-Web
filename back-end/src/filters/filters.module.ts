@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common'
+import { APP_FILTER } from '@nestjs/core'
 import { ZodExceptionFilter } from './zod-exception.filter'
 import { InvalidCredentialsExceptionFilter } from './invalid-credentials-exception.filter'
 import { UserAlreadyExistsExceptionFilter } from './user-already-exists-exception.filter'
-import { APP_FILTER } from '@nestjs/core'
+import { JwtExceptionFilter } from './jwt-exception.filter'
 
 @Module({
   providers: [
@@ -17,6 +18,10 @@ import { APP_FILTER } from '@nestjs/core'
     {
       provide: APP_FILTER,
       useClass: ZodExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: JwtExceptionFilter,
     },
   ],
 })

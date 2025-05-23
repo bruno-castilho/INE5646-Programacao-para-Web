@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Res } from '@nestjs/common'
-import { FastifyReply } from 'fastify'
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
+import { FastifyReply, FastifyRequest } from 'fastify'
 import { LoginUseCase } from 'src/use-cases/login.service'
 import { RegisterUseCase } from 'src/use-cases/register.service'
 import { z } from 'zod'
@@ -108,5 +108,14 @@ export class AuthenticateController {
       })
       .status(200)
       .send({ user, message: `Bem vindo, ${user.name}` })
+  }
+
+  @Get('logged')
+  async logged(@Req() req: FastifyRequest) {
+    const token = req.cookies.access_token
+
+    const user = await this.jwtService.verifyAsync(token ?? '')
+
+    return { user, message: `Bem vindo, ${user.name}` }
   }
 }

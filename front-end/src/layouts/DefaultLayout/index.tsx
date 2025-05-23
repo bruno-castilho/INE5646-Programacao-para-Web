@@ -1,8 +1,45 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { Header } from './header'
 import { Footer, SideBar, Main } from './styles'
 
+import { Authenticate } from '../../api/authenticate'
+import { useContext } from 'react'
+import { AlertContext } from '../../context/AlertContext'
+import { useQuery } from '@tanstack/react-query'
+
 export function DefaultLayout() {
+  const navigate = useNavigate()
+  const { success } = useContext(AlertContext)
+
+  const {
+    data: user,
+    isError,
+    isLoading,
+  } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const { user, message } = await Authenticate.logged()
+      success(message)
+      return user
+    },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    retry: false,
+  })
+
+  if (!user && isLoading) {
+    return (
+      <>
+        <h1>Loading</h1>
+      </>
+    )
+  }
+
+  if (isError) navigate('/login')
+
+  if (!user) return <></>
+
   return (
     <>
       <Header />
