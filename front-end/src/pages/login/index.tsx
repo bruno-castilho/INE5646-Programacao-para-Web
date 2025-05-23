@@ -9,11 +9,17 @@ import {
   Typography,
 } from '@mui/material'
 
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import ForgotPassword from '../../components/ForgotPassword'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useMutation } from '@tanstack/react-query'
+import { Authenticate } from '../../api/authenticate'
+import { AlertContext } from '../../context/AlertContext'
+import axios from 'axios'
+import { queryClient } from '../../lib/react-query'
+import { useNavigate } from 'react-router-dom'
 
 export const LoginFormSchema = z.object({
   email: z.string().trim().email({ message: 'E-mail inválido' }),
@@ -36,13 +42,30 @@ type LoginFormSchemaType = z.infer<typeof LoginFormSchema>
 
 export function Login() {
   const [open, setOpen] = useState(false)
+  const { error, success } = useContext(AlertContext)
+  const navigate = useNavigate()
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isSubmitting, errors },
   } = useForm<LoginFormSchemaType>({
     resolver: zodResolver(LoginFormSchema),
+  })
+
+  const { mutateAsync: loginFn, isPending } = useMutation({
+    mutationFn: async ({ email, password }: LoginFormSchemaType) =>
+      await Authenticate.login({ email, password }),
+    onSuccess: (data) => {
+      success(data.message)
+      queryClient.setQueryData(['user'], data.user)
+    },
+    onError: (e) => {
+      if (axios.isAxiosError(e)) return error(e.response?.data.message)
+
+      error('Algo não ocorreu bem')
+    },
   })
 
   const handleClickOpen = () => {
@@ -53,8 +76,10 @@ export function Login() {
     setOpen(false)
   }
 
-  function handleSubmitForm(data: LoginFormSchemaType) {
-    console.log(data)
+  async function handleSubmitForm(data: LoginFormSchemaType) {
+    await loginFn(data)
+    reset()
+    navigate('/')
   }
 
   return (
@@ -110,7 +135,7 @@ export function Login() {
           size="small"
           fullWidth
           variant="contained"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isPending}
         >
           Entrar
         </Button>
