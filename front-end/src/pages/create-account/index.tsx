@@ -9,6 +9,11 @@ import {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useMutation } from '@tanstack/react-query'
+import { Authenticate } from '../../api/authenticate'
+import { useContext } from 'react'
+import { AlertContext } from '../../context/AlertContext'
+import axios from 'axios'
 
 export const CreateAccountFormSchema = z
   .object({
@@ -20,7 +25,7 @@ export const CreateAccountFormSchema = z
         message: 'O nome deve conter apenas letras',
       }),
 
-    lastname: z
+    last_name: z
       .string()
       .trim()
       .min(1, { message: 'Digite um sobrenome' })
@@ -57,16 +62,38 @@ export const CreateAccountFormSchema = z
 type CreateAccountFormSchemaType = z.infer<typeof CreateAccountFormSchema>
 
 export function CreateAccount() {
+  const { error, success } = useContext(AlertContext)
+
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isSubmitting, errors },
   } = useForm<CreateAccountFormSchemaType>({
     resolver: zodResolver(CreateAccountFormSchema),
   })
 
-  function handleSubmitForm(data: CreateAccountFormSchemaType) {
-    console.log(data)
+  const { mutateAsync: registerFn, isPending } = useMutation({
+    mutationFn: async ({
+      name,
+      last_name,
+      email,
+      password,
+    }: CreateAccountFormSchemaType) =>
+      await Authenticate.register({ name, last_name, email, password }),
+    onSuccess: (data) => {
+      success(data.message)
+    },
+    onError: (e) => {
+      if (axios.isAxiosError(e)) return error(e.response?.data.message)
+
+      error('Algo não ocorreu bem')
+    },
+  })
+
+  async function handleSubmitForm(data: CreateAccountFormSchemaType) {
+    await registerFn(data)
+    reset()
   }
 
   return (
@@ -100,18 +127,18 @@ export function CreateAccount() {
           />
         </FormControl>
         <FormControl>
-          <FormLabel htmlFor="lastname">Sobrenome</FormLabel>
+          <FormLabel htmlFor="last_name">Sobrenome</FormLabel>
           <TextField
             size="small"
-            id="lastname"
-            type="lastname"
+            id="last_name"
+            type="last_name"
             autoFocus
             required
             fullWidth
             variant="outlined"
-            error={!!errors.lastname}
-            helperText={errors.lastname?.message ?? ''}
-            {...register('lastname')}
+            error={!!errors.last_name}
+            helperText={errors.last_name?.message ?? ''}
+            {...register('last_name')}
           />
         </FormControl>
         <FormControl>
@@ -151,7 +178,7 @@ export function CreateAccount() {
           <TextField
             size="small"
             placeholder="••••••"
-            type="repeat_password"
+            type="password"
             id="repeat_password"
             autoFocus
             required
@@ -167,7 +194,7 @@ export function CreateAccount() {
           size="small"
           fullWidth
           variant="contained"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isPending}
         >
           CRIAR
         </Button>
