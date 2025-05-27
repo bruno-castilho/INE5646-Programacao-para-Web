@@ -1,5 +1,38 @@
 services:
-  web:
-    build: ../front-end
-    ports:
-        - "80:80"   
+  mongo:
+    image: mongo:6
+    hostname: mongo
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - ./mongo-data:/data/db
+  back-end:
+    build: ../back-end
+    hostname: backend
+    environment:
+      NODE_ENV: "production"
+      DATABASE_URL: "mongodb://mongo:27017/phpeditor"
+      SECRET: "yout-secret"
+    depends_on:
+        - mongo
+  front-end:
+    hostname: frontend
+    build:
+      context: ../front-end
+      args:
+        VITE_API_URL: http://localhost:8080/api
+    depends_on:
+        - back-end
+  nginx:    
+      image: nginx:stable-alpine
+      restart: always
+      ports:
+        - "8080:8080"                
+      volumes:          
+        - ./nginx/config:/etc/nginx/conf.d/
+        - ./nginx/logs:/var/log/nginx/ 
+
+      depends_on:
+        - front-end
+        - back-end
+        - mongo
+  

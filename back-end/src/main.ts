@@ -14,11 +14,14 @@ async function bootstrap() {
     new FastifyAdapter(),
   )
 
+  app.setGlobalPrefix('api')
+
   await app.register(fastifyCors, {
     origin: true,
     credentials: true,
   })
   await app.register(fastifyCookie)
-  await app.listen(env.PORT ?? 3000)
+
+  app.listen({ port: env.PORT, host: '0.0.0.0' })
 }
 bootstrap()
