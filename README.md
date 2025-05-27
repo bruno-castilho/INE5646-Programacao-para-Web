@@ -1,4 +1,4 @@
-AP \
+AP
 - [x] Aplicação acessível apenas com autenticação 
 - [x] Cadastro de novos usuários 
 - [ ] Atualização de cadastro (na autenticação) 
