@@ -14,12 +14,12 @@ AP
 - [ ] Apresentação no server HTTP (framework reveal.js) 
 
 EP
-- [x] Resumo
+- [] Resumo
 - [ ] Introdução                                        
-- [ ]  - Motivação
+- [x]  - Motivação
 - [ ]  - Problema
 - [ ]  - Trabalhos relacionados
-- [ ]  - Contribuição do trabalho
+- [x]  - Contribuição do trabalho
 - [ ]  - Descrição da organização do trabalho
 - [ ] Fundamentação teórica
 - [ ] Materiais e métodos
