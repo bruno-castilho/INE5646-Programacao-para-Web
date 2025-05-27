@@ -14,6 +14,7 @@ import { Authenticate } from '../../api/authenticate'
 import { useContext } from 'react'
 import { AlertContext } from '../../context/AlertContext'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 export const CreateAccountFormSchema = z
   .object({
@@ -63,6 +64,7 @@ type CreateAccountFormSchemaType = z.infer<typeof CreateAccountFormSchema>
 
 export function CreateAccount() {
   const { error, success } = useContext(AlertContext)
+  const navigate = useNavigate()
 
   const {
     register,
@@ -94,6 +96,10 @@ export function CreateAccount() {
   async function handleSubmitForm(data: CreateAccountFormSchemaType) {
     await registerFn(data)
     reset()
+  }
+
+  function handleDoLogin() {
+    navigate('/login')
   }
 
   return (
@@ -204,6 +210,7 @@ export function CreateAccount() {
           fullWidth
           variant="contained"
           color="secondary"
+          onClick={handleDoLogin}
         >
           FAZER LOGIN
         </Button>
