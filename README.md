@@ -14,7 +14,7 @@ AP
 - [ ] Apresentação no server HTTP (framework reveal.js) 
 
 EP
-- [] Resumo
+- [ ] Resumo
 - [ ] Introdução                                        
 - [x]  - Motivação
 - [ ]  - Problema
