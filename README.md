@@ -1,0 +1,36 @@
+AP \
+- [x] Aplicação acessível apenas com autenticação 
+- [x] Cadastro de novos usuários 
+- [ ] Atualização de cadastro (na autenticação) 
+- [x] Construção de base de dados (MongoDB) no back-end 
+- [ ] Função de compartilhamento de dados entre usuários 
+- [ ] Front-end responsivo (desktop e mobile) 
+- [ ] User-side: funcionalidades 
+- [x] Front-end 
+- [x] Back-end 
+- [ ] Aspectos de segurança 
+- [ ]  - Testes de vulnerabilidade 
+- [ ]  - Soluções de segurança 
+- [ ] Apresentação no server HTTP (framework reveal.js) 
+
+EP
+- [x] Resumo
+- [ ] Introdução                                        
+- [ ]  - Motivação
+- [ ]  - Problema
+- [ ]  - Trabalhos relacionados
+- [ ]  - Contribuição do trabalho
+- [ ]  - Descrição da organização do trabalho
+- [ ] Fundamentação teórica
+- [ ] Materiais e métodos
+- [ ]  - Metodologia
+- [ ]  - Discussão das principais partes de código
+- [ ]  - Roteiro detalhado de pacotes
+- [ ]  - Roteiro detalhado de instalação
+- [ ] Resultados
+- [ ]  - Discussão dos resultados obtidos
+- [ ]  - Discussão sobre aspectos de segurança
+- [ ]    - Testes de vulnerabilidade/intrusão
+- [ ]    - Soluções de segurança
+- [ ] Conclusão(ões)
+- [ ] Referências
