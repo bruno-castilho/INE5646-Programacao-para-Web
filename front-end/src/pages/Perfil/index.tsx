@@ -1,0 +1,250 @@
+import {
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  IconButton,
+  TextField,
+} from '@mui/material'
+import { Card } from '../../components/Card'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
+import { User } from '../../types/user'
+import { Edit } from '@mui/icons-material'
+
+export const ProfileFormSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(1, { message: 'Digite um nome' })
+      .regex(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/, {
+        message: 'O nome deve conter apenas letras',
+      }),
+
+    last_name: z
+      .string()
+      .trim()
+      .min(1, { message: 'Digite um sobrenome' })
+      .regex(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/, {
+        message: 'O sobrenome deve conter apenas letras',
+      }),
+
+    email: z.string().trim().email({ message: 'E-mail inválido' }),
+
+    new_password: z
+      .string()
+      .trim()
+      .min(8, { message: 'A senha deve ter no mínimo 8 caracteres' })
+      .regex(/(?=.*[A-Z])/, {
+        message: 'A senha deve conter pelo menos uma letra maiúscula',
+      })
+      .regex(/(?=.*[0-9])/, {
+        message: 'A senha deve conter pelo menos um número',
+      })
+      .regex(/(?=.*[!@#$%^&*(),.?":{}|<>])/, {
+        message: 'A senha deve conter pelo menos um símbolo especial',
+      }),
+
+    repeat_password: z
+      .string()
+      .trim()
+      .min(1, { message: 'Este campo não pode ficar vazio' }),
+
+    password: z
+      .string()
+      .trim()
+      .min(8, { message: 'A senha deve ter no mínimo 8 caracteres' })
+      .regex(/(?=.*[A-Z])/, {
+        message: 'A senha deve conter pelo menos uma letra maiúscula',
+      })
+      .regex(/(?=.*[0-9])/, {
+        message: 'A senha deve conter pelo menos um número',
+      })
+      .regex(/(?=.*[!@#$%^&*(),.?":{}|<>])/, {
+        message: 'A senha deve conter pelo menos um símbolo especial',
+      }),
+  })
+  .refine((data) => data.new_password === data.repeat_password, {
+    path: ['repeat_password'],
+    message: 'As senhas não coincidem',
+  })
+
+type ProfileFormSchemaType = z.infer<typeof ProfileFormSchema>
+
+export function Profile() {
+  const queryClient = useQueryClient()
+  const user = queryClient.getQueryData<User>(['user'])
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+    reset,
+  } = useForm<ProfileFormSchemaType>({
+    resolver: zodResolver(ProfileFormSchema),
+    values: {
+      email: user ? user.email : '',
+      name: user ? user.name : '',
+      last_name: user ? user.last_name : '',
+      new_password: '',
+      repeat_password: '',
+      password: '',
+    },
+  })
+
+  async function handleSubmitForm(data: ProfileFormSchemaType) {
+    console.log(data)
+    reset()
+  }
+
+  return (
+    <Box
+      variant="outlined"
+      component={Card}
+      maxWidth={450}
+      minWidth={300}
+      padding={4}
+      gap={2}
+    >
+      <Box display="flex" justifyContent="center">
+        <Badge
+          overlap="circular"
+          badgeContent={
+            <>
+              <IconButton size="large" sx={{ p: 0, color: 'text.secondary' }}>
+                <Edit fontSize="large" />
+              </IconButton>
+            </>
+          }
+        >
+          <Avatar
+            sx={{
+              width: 128,
+              height: 128,
+              fontSize: 64,
+            }}
+          >
+            B
+          </Avatar>
+        </Badge>
+      </Box>
+      <Box
+        component="form"
+        onSubmit={handleSubmit(handleSubmitForm)}
+        display="flex"
+        flexDirection="column"
+        width="100%"
+        gap={2}
+      >
+        <FormControl>
+          <FormLabel htmlFor="name">Nome</FormLabel>
+          <TextField
+            size="small"
+            id="name"
+            type="name"
+            autoFocus
+            required
+            fullWidth
+            variant="outlined"
+            error={!!errors.name}
+            helperText={errors.name?.message ?? ''}
+            {...register('name')}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="last_name">Sobrenome</FormLabel>
+          <TextField
+            size="small"
+            id="last_name"
+            type="last_name"
+            autoFocus
+            required
+            fullWidth
+            variant="outlined"
+            error={!!errors.last_name}
+            helperText={errors.last_name?.message ?? ''}
+            {...register('last_name')}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="email">Email</FormLabel>
+          <TextField
+            size="small"
+            id="email"
+            type="email"
+            placeholder="seu@email.com"
+            autoFocus
+            required
+            fullWidth
+            variant="outlined"
+            error={!!errors.email}
+            helperText={errors.email?.message ?? ''}
+            {...register('email')}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="new_password">Nova senha</FormLabel>
+          <TextField
+            size="small"
+            placeholder="••••••"
+            type="password"
+            id="new_password"
+            autoFocus
+            required
+            fullWidth
+            variant="outlined"
+            error={!!errors.new_password}
+            helperText={errors.new_password?.message ?? ''}
+            {...register('new_password')}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="repeat_password">Repetir nova senha</FormLabel>
+          <TextField
+            size="small"
+            placeholder="••••••"
+            type="password"
+            id="repeat_password"
+            autoFocus
+            required
+            fullWidth
+            variant="outlined"
+            error={!!errors.repeat_password}
+            helperText={errors.repeat_password?.message ?? ''}
+            {...register('repeat_password')}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="password">Senha</FormLabel>
+          <TextField
+            size="small"
+            placeholder="••••••"
+            type="password"
+            id="password"
+            autoFocus
+            required
+            fullWidth
+            variant="outlined"
+            error={!!errors.password}
+            helperText={errors.password?.message ?? ''}
+            {...register('password')}
+          />
+        </FormControl>
+        <Button
+          type="submit"
+          size="small"
+          fullWidth
+          variant="contained"
+          disabled={isSubmitting}
+        >
+          Enviar
+        </Button>
+      </Box>
+    </Box>
+  )
+}

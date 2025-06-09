@@ -1,10 +1,13 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { DefaultLayout } from './layouts/DefaultLayout'
-import { Home } from './pages/home'
-import { Dom } from './pages/dom'
-import { Login } from './pages/login'
+import { Dom } from './pages/Dom'
+import { Login } from './pages/Login'
 import { BeforeLayout } from './layouts/BeforeLayout'
-import { CreateAccount } from './pages/create-account'
+import { CreateAccount } from './pages/CreateAccount'
+import { Editor } from './pages/Editor'
+import { Repository } from './pages/Repository'
+import { NotFound } from './pages/NotFound'
+import { Profile } from './pages/Perfil'
 
 export const router = createBrowserRouter([
   {
@@ -13,25 +16,23 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Navigate to="/home" replace />,
+        element: <Navigate to="/editor" replace />,
       },
       {
-        path: '/home',
-        element: <Home />,
+        path: 'editor',
+        element: <Editor />,
       },
       {
-        path: '/dom',
+        path: 'repositorio',
+        element: <Repository />,
+      },
+      {
+        path: 'dom',
         element: <Dom />,
       },
-    ],
-  },
-  {
-    path: '/',
-    element: <BeforeLayout />,
-    children: [
       {
-        path: '/login',
-        element: <Login />,
+        path: 'perfil',
+        element: <Profile />,
       },
     ],
   },
@@ -42,6 +43,14 @@ export const router = createBrowserRouter([
       {
         path: '/cadastrar',
         element: <CreateAccount />,
+      },
+      {
+        path: '/login',
+        element: <Login />,
+      },
+      {
+        path: '*',
+        element: <NotFound />,
       },
     ],
   },

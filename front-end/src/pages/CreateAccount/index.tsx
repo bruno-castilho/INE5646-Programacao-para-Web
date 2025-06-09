@@ -15,6 +15,7 @@ import { useContext } from 'react'
 import { AlertContext } from '../../context/AlertContext'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { Card } from '../../components/Card'
 
 export const CreateAccountFormSchema = z
   .object({
@@ -103,19 +104,24 @@ export function CreateAccount() {
   }
 
   return (
-    <>
+    <Box
+      variant="outlined"
+      component={Card}
+      maxWidth={450}
+      minWidth={300}
+      padding={4}
+      gap={2}
+    >
       <Typography component="h1" variant="h4">
         Criar conta
       </Typography>
       <Box
         component="form"
         onSubmit={handleSubmit(handleSubmitForm)}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          gap: 2,
-        }}
+        display="flex"
+        flexDirection="column"
+        width="100%"
+        gap={2}
       >
         <FormControl>
           <FormLabel htmlFor="name">Nome</FormLabel>
@@ -153,7 +159,7 @@ export function CreateAccount() {
             size="small"
             id="email"
             type="email"
-            placeholder="your@email.com"
+            placeholder="seu@email.com"
             autoFocus
             required
             fullWidth
@@ -215,6 +221,6 @@ export function CreateAccount() {
           FAZER LOGIN
         </Button>
       </Box>
-    </>
+    </Box>
   )
 }

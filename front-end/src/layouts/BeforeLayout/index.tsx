@@ -1,12 +1,21 @@
+import { Box } from '@mui/material'
 import { Outlet } from 'react-router-dom'
-import { BeforeLayoutCard, BeforeLayoutContainer } from './styles'
 
 export function BeforeLayout() {
   return (
-    <BeforeLayoutContainer>
-      <BeforeLayoutCard variant="outlined">
+    <Box>
+      <Box
+        component="main"
+        minHeight="100vh"
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        paddingTop={2}
+        paddingBottom={2}
+      >
         <Outlet />
-      </BeforeLayoutCard>
-    </BeforeLayoutContainer>
+      </Box>
+    </Box>
   )
 }

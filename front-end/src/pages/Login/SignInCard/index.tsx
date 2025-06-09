@@ -4,24 +4,26 @@ import {
   Divider,
   FormControl,
   FormLabel,
-  Link,
   TextField,
   Typography,
+  Link as LinkMUI,
 } from '@mui/material'
-
 import { useContext, useState } from 'react'
-import ForgotPassword from '../../components/ForgotPassword'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
-import { Authenticate } from '../../api/authenticate'
-import { AlertContext } from '../../context/AlertContext'
-import axios from 'axios'
-import { queryClient } from '../../lib/react-query'
-import { useNavigate } from 'react-router-dom'
 
-export const LoginFormSchema = z.object({
+import axios from 'axios'
+
+import { Link, useNavigate } from 'react-router-dom'
+import { AlertContext } from '../../../context/AlertContext'
+import { Authenticate } from '../../../api/authenticate'
+import { queryClient } from '../../../lib/react-query'
+import { Card } from '../../../components/Card'
+import ForgotPassword from '../../../components/ForgotPassword'
+
+export const SignInFormSchema = z.object({
   email: z.string().trim().email({ message: 'E-mail inválido' }),
   password: z
     .string()
@@ -38,9 +40,9 @@ export const LoginFormSchema = z.object({
     }),
 })
 
-type LoginFormSchemaType = z.infer<typeof LoginFormSchema>
+type SignInFormSchemaType = z.infer<typeof SignInFormSchema>
 
-export function Login() {
+export function SignInCard() {
   const [open, setOpen] = useState(false)
   const { error, success } = useContext(AlertContext)
   const navigate = useNavigate()
@@ -50,12 +52,12 @@ export function Login() {
     handleSubmit,
     reset,
     formState: { isSubmitting, errors },
-  } = useForm<LoginFormSchemaType>({
-    resolver: zodResolver(LoginFormSchema),
+  } = useForm<SignInFormSchemaType>({
+    resolver: zodResolver(SignInFormSchema),
   })
 
   const { mutateAsync: loginFn, isPending } = useMutation({
-    mutationFn: async ({ email, password }: LoginFormSchemaType) =>
+    mutationFn: async ({ email, password }: SignInFormSchemaType) =>
       await Authenticate.login({ email, password }),
     onSuccess: (data) => {
       success(data.message)
@@ -76,26 +78,31 @@ export function Login() {
     setOpen(false)
   }
 
-  async function handleSubmitForm(data: LoginFormSchemaType) {
+  async function handleSubmitForm(data: SignInFormSchemaType) {
     await loginFn(data)
     reset()
-    navigate('/')
+    navigate('/perfil')
   }
 
   return (
-    <>
+    <Box
+      variant="outlined"
+      component={Card}
+      maxWidth={450}
+      minWidth={300}
+      padding={4}
+      gap={2}
+    >
       <Typography component="h1" variant="h4">
         Fazer login
       </Typography>
       <Box
         component="form"
         onSubmit={handleSubmit(handleSubmitForm)}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          gap: 2,
-        }}
+        display="flex"
+        flexDirection="column"
+        width="100%"
+        gap={2}
       >
         <FormControl>
           <FormLabel htmlFor="email">Email</FormLabel>
@@ -103,7 +110,7 @@ export function Login() {
             size="small"
             id="email"
             type="email"
-            placeholder="your@email.com"
+            placeholder="seu@email.com"
             autoFocus
             required
             fullWidth
@@ -139,25 +146,32 @@ export function Login() {
         >
           Entrar
         </Button>
-        <Link
+        <LinkMUI
           component="button"
           type="button"
           onClick={handleClickOpen}
           variant="body2"
-          sx={{ alignSelf: 'center' }}
+          alignSelf="center"
+          color="secondary"
         >
           Esqueceu sua senha?
-        </Link>
+        </LinkMUI>
       </Box>
       <Divider>ou</Divider>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography sx={{ textAlign: 'center' }}>
+      <Box display="flex" flexDirection="column" gap={2}>
+        <Typography textAlign="center">
           Não tem uma conta?{' '}
-          <Link href="/cadastrar" variant="body2" sx={{ alignSelf: 'center' }}>
+          <LinkMUI
+            variant="body2"
+            textAlign="center"
+            component={Link}
+            to="/cadastrar"
+            color="secondary"
+          >
             Inscrever-se
-          </Link>
+          </LinkMUI>
         </Typography>
       </Box>
-    </>
+    </Box>
   )
 }

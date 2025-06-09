@@ -1,5 +1,5 @@
 import { api } from '../lib/axios'
-import { User } from '../types/User'
+import { User } from '../types/user'
 
 interface AuthenticateRegisterParams {
   name: string
