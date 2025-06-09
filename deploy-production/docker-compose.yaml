@@ -4,7 +4,7 @@ services:
     ports:
         - "80:80"  
     volumes:
-      - ../AA:/usr/local/apache2/htdocs/
+      - ../AA:/usr/local/apache2/htdocs/AA
 
   mongo:
     image: mongo:6
