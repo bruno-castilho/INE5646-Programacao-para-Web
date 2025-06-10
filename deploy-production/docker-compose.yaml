@@ -1,11 +1,4 @@
 services:
-  apache:
-    image: httpd:2.4 
-    ports:
-        - "80:80"  
-    volumes:
-      - ../AA:/usr/local/apache2/htdocs/AA
-
   mongo:
     image: mongo:6
     hostname: mongo
