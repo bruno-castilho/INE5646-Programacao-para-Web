@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  OutlinedInput,
+  TextField,
 } from '@mui/material'
 
 interface ForgotPasswordProps {
@@ -40,7 +40,7 @@ export default function ForgotPassword({
           Digite o endereço de e-mail da sua conta e enviaremos um link para
           redefinir sua senha.
         </DialogContentText>
-        <OutlinedInput
+        <TextField
           autoFocus
           required
           margin="dense"

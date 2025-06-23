@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem'
 import MenuIcon from '@mui/icons-material/Menu'
 import { ReactNode, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { DataObject, Folder, Edit } from '@mui/icons-material'
+import { Folder, Edit } from '@mui/icons-material'
 
 interface Page {
   name: string
@@ -19,13 +19,16 @@ interface Page {
 }
 
 const pages: Page[] = [
-  { name: 'Editor', route: '/editor', icon: <Edit fontSize="small" /> },
+  {
+    name: 'Editor',
+    route: '/editor',
+    icon: <Edit fontSize="small" color="primary" />,
+  },
   {
     name: 'Repositório',
-    route: '/repositorio',
-    icon: <Folder fontSize="small" />,
+    route: '/repositorio/pessoal',
+    icon: <Folder fontSize="small" color="primary" />,
   },
-  { name: 'Dom', route: '/dom', icon: <DataObject fontSize="small" /> },
 ]
 
 export function PageMenu() {

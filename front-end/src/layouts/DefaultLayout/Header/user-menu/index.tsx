@@ -60,7 +60,7 @@ export function UserMenu() {
       >
         <MenuItem component={Link} to="/perfil">
           <ListItemIcon>
-            <Person fontSize="small" />
+            <Person fontSize="small" color="primary" />
           </ListItemIcon>
           <Typography textAlign="center">Perfil</Typography>
         </MenuItem>
@@ -68,7 +68,7 @@ export function UserMenu() {
         {(mode === 'light' || systemMode === 'light') && (
           <MenuItem onClick={handleChangeMode}>
             <ListItemIcon>
-              <DarkMode fontSize="small" />
+              <DarkMode fontSize="small" color="primary" />
             </ListItemIcon>
             <Typography textAlign="center">Habilitar Modo Escuro</Typography>
           </MenuItem>
@@ -77,7 +77,7 @@ export function UserMenu() {
         {(mode === 'dark' || systemMode === 'dark') && (
           <MenuItem onClick={handleChangeMode}>
             <ListItemIcon>
-              <LightMode fontSize="small" />
+              <LightMode fontSize="small" color="primary" />
             </ListItemIcon>
             <Typography textAlign="center">Habilitar Modo Claro</Typography>
           </MenuItem>
@@ -85,7 +85,7 @@ export function UserMenu() {
 
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
-            <Logout fontSize="small" />
+            <Logout fontSize="small" color="primary" />
           </ListItemIcon>
           <Typography textAlign="center">Sair</Typography>
         </MenuItem>

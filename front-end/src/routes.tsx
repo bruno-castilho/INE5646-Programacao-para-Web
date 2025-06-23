@@ -8,6 +8,8 @@ import { Editor } from './pages/Editor'
 import { Repository } from './pages/Repository'
 import { NotFound } from './pages/NotFound'
 import { Profile } from './pages/Perfil'
+import { Personal } from './pages/Repository/Personal'
+import { SharedWithMe } from './pages/Repository/SharedWithMe'
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +27,16 @@ export const router = createBrowserRouter([
       {
         path: 'repositorio',
         element: <Repository />,
+        children: [
+          {
+            path: 'pessoal',
+            element: <Personal />,
+          },
+          {
+            path: 'compartilhado',
+            element: <SharedWithMe />,
+          },
+        ],
       },
       {
         path: 'dom',
