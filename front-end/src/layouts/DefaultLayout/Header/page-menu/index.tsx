@@ -9,7 +9,7 @@ import {
 import MenuItem from '@mui/material/MenuItem'
 import MenuIcon from '@mui/icons-material/Menu'
 import { ReactNode, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Folder, Edit } from '@mui/icons-material'
 
 interface Page {
@@ -33,6 +33,7 @@ const pages: Page[] = [
 
 export function PageMenu() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
+  const location = useLocation()
 
   function handleOpenNavMenu(event: React.MouseEvent<HTMLElement>) {
     setAnchorElNav(event.currentTarget)
@@ -41,6 +42,8 @@ export function PageMenu() {
   function handleCloseNavMenu() {
     setAnchorElNav(null)
   }
+
+  const pathParts = location.pathname.split('/')
 
   return (
     <>
@@ -85,7 +88,14 @@ export function PageMenu() {
             key={page.name}
             component={Link}
             to={page.route}
-            sx={{ my: 2, color: 'text.primary', display: 'block' }}
+            sx={{
+              my: 2,
+              display: 'block',
+              color:
+                pathParts[1] === page.route.split('/')[1]
+                  ? 'secondary.main'
+                  : 'text.primary',
+            }}
           >
             {page.name}
           </Button>

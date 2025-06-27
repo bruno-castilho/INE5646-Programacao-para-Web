@@ -11,8 +11,7 @@ export function BeforeLayout() {
         flexDirection="column"
         justifyContent="center"
         alignItems="center"
-        paddingTop={2}
-        paddingBottom={2}
+        padding={2}
       >
         <Outlet />
       </Box>

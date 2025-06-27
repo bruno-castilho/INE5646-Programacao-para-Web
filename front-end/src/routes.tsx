@@ -25,6 +25,10 @@ export const router = createBrowserRouter([
         element: <Editor />,
       },
       {
+        path: 'editor/:id',
+        element: <Editor />,
+      },
+      {
         path: 'repositorio',
         element: <Repository />,
         children: [

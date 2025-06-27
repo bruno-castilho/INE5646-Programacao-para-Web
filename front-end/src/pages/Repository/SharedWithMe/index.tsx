@@ -5,101 +5,100 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Link as LinkMaterial,
+  Skeleton,
 } from '@mui/material'
 import { TableSortLabel } from '../../../components/TableSortLabel'
 
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { TablePagination } from '../../../components/TablePagination'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { files } from '../../../api/files'
+import { z } from 'zod'
+import { File } from '../../../types/file'
 
-interface File {
-  id: string
-  name: string
-  updated_by: string
-  created_by: string
-  updated_at: Date
+interface SharedWithMeTableRowProps {
+  file: File
 }
 
-const files: File[] = [
-  {
-    id: 'e7f8a9b0-c1d2-4e5f-8765-4321fedcba98',
-    name: 'documento_1.php',
-    created_by: 'usuario@example.com',
-    updated_by: 'outro.usuario@example.com',
-    updated_at: new Date('2024-03-15T10:30:00.000Z'),
-  },
-  {
-    id: 'b2c3d4e5-f6a7-4b8c-9012-3456789abcde',
-    name: 'relatorio_2.php',
-    created_by: 'usuario@example.com',
-    updated_by: 'outro.usuario@example.com',
-    updated_at: new Date('2025-01-20T14:45:00.000Z'),
-  },
-  {
-    id: '1a2b3c4d-5e6f-4789-0123-456789abcdef',
-    name: 'imagem_3.php',
-    created_by: 'usuario@example.com',
-    updated_by: 'outro.usuario@example.com',
-    updated_at: new Date('2023-07-01T08:00:00.000Z'),
-  },
-  {
-    id: '9f8e7d6c-5b4a-4321-fedc-ba9876543210',
-    name: 'planilha_4.php',
-    created_by: 'usuario@example.com',
-    updated_by: 'outro.usuario@example.com',
-    updated_at: new Date('2024-11-05T16:15:00.000Z'),
-  },
-  {
-    id: '3c4d5e6f-7a8b-4901-2345-6789abcdef01',
-    name: 'apresentacao.php',
-    created_by: 'usuario@example.com',
-    updated_by: 'outro.usuario@example.com',
-    updated_at: new Date('2025-06-10T09:00:00.000Z'),
-  },
-  {
-    id: 'd1e2f3a4-b5c6-47d8-90ef-1234567890ab',
-    name: 'dados_6.php',
-    created_by: 'usuario@example.com',
-    updated_by: 'outro.usuario@example.com',
-    updated_at: new Date('2023-09-22T11:20:00.000Z'),
-  },
-  {
-    id: 'f5e6d7c8-a9b0-4123-4567-89abcdef0123',
-    name: 'config_7.php',
-    created_by: 'usuario@example.com',
-    updated_by: 'outro.usuario@example.com',
-    updated_at: new Date('2024-01-01T13:00:00.000Z'),
-  },
-  {
-    id: '8a7b6c5d-4e3f-4210-9876-543210fedcba',
-    name: 'log_8.php',
-    created_by: 'usuario@example.com',
-    updated_by: 'outro.usuario@example.com',
-    updated_at: new Date('2025-04-03T17:05:00.000Z'),
-  },
-  {
-    id: '2b3c4d5e-6f7a-4890-1234-56789abcdef0',
-    name: 'backup_9.php',
-    created_by: 'usuario@example.com',
-    updated_by: 'outro.usuario@example.com',
-    updated_at: new Date('2023-05-10T19:00:00.000Z'),
-  },
-  {
-    id: '4d5e6f7a-8b9c-4012-3456-789abcdef012',
-    name: 'teste_10.php',
-    created_by: 'usuario@example.com',
-    updated_by: 'outro.usuario@example.com',
-    updated_at: new Date('2024-08-28T09:30:00.000Z'),
-  },
-]
+function SharedWithMeTableRow({ file }: SharedWithMeTableRowProps) {
+  return (
+    <TableRow>
+      <TableCell component="th" scope="row" align="left">
+        <LinkMaterial component={Link} to={`/editor/${file.id}`}>
+          {file.id}
+        </LinkMaterial>
+      </TableCell>
+      <TableCell component="th" scope="row" align="left">
+        {file.name}
+      </TableCell>
+
+      <TableCell component="th" scope="row" align="left">
+        {file.created_by.email}
+      </TableCell>
+
+      <TableCell component="th" scope="row" align="left">
+        {file.updated_by.email}
+      </TableCell>
+
+      <TableCell component="th" scope="row" align="left">
+        {formatDistanceToNow(file.updated_at, {
+          locale: ptBR,
+          addSuffix: true,
+        })}
+      </TableCell>
+    </TableRow>
+  )
+}
+
+function SharedWithMeTableRowSkeleton() {
+  return (
+    <TableRow>
+      <TableCell component="th" scope="row" align="left">
+        <Skeleton variant="text" />
+      </TableCell>
+      <TableCell component="th" scope="row" align="left">
+        <Skeleton variant="text" />
+      </TableCell>
+
+      <TableCell component="th" scope="row" align="left">
+        <Skeleton variant="text" />
+      </TableCell>
+
+      <TableCell component="th" scope="row" align="left">
+        <Skeleton variant="text" />
+      </TableCell>
+
+      <TableCell component="th" scope="row" align="left">
+        <Skeleton variant="text" />
+      </TableCell>
+    </TableRow>
+  )
+}
 
 export function SharedWithMe() {
+  const [searchParams] = useSearchParams()
+
+  const perPage = z.coerce.number().parse(searchParams.get('perPage') ?? '10')
+  const page = z.coerce.number().parse(searchParams.get('page') ?? '1')
+
+  const sortBy = (searchParams.get('sortBy') as 'name' | 'updated_at') ?? 'name'
+  const orderBy = (searchParams.get('orderBy') as 'asc' | 'desc') ?? 'asc'
+
+  const { data, isPending } = useQuery({
+    queryKey: ['files-sharedWithMe', perPage, page, sortBy, orderBy],
+    queryFn: () =>
+      files.searchFilesSharedWithMe({ perPage, page, sortBy, orderBy }),
+  })
+
   return (
     <TableContainer>
       <Table sx={{ width: '100%' }} size="small">
         <TableHead>
           <TableRow>
-            <TableCell align="left" sx={{ minWidth: 400 }}>
+            <TableCell align="left" sx={{ minWidth: 260 }}>
               ID
             </TableCell>
             <TableCell align="left">
@@ -118,34 +117,18 @@ export function SharedWithMe() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {files?.map((file) => (
-            <TableRow key={file.id}>
-              <TableCell component="th" scope="row" align="left">
-                {file.id}
-              </TableCell>
-              <TableCell component="th" scope="row" align="left">
-                {file.name}
-              </TableCell>
+          {!isPending &&
+            data?.files.map((file) => (
+              <SharedWithMeTableRow key={file.id} file={file} />
+            ))}
 
-              <TableCell component="th" scope="row" align="left">
-                {file.created_by}
-              </TableCell>
-
-              <TableCell component="th" scope="row" align="left">
-                {file.updated_by}
-              </TableCell>
-
-              <TableCell component="th" scope="row" align="left">
-                {formatDistanceToNow(file.updated_at, {
-                  locale: ptBR,
-                  addSuffix: true,
-                })}
-              </TableCell>
-            </TableRow>
-          ))}
+          {isPending &&
+            Array.from({ length: 10 }).map((_, index) => (
+              <SharedWithMeTableRowSkeleton key={index} />
+            ))}
         </TableBody>
       </Table>
-      <TablePagination disabled={false} totalCount={44} />
+      <TablePagination disabled={isPending} totalCount={data?.total ?? 0} />
     </TableContainer>
   )
 }

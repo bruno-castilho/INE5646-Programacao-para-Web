@@ -12,9 +12,13 @@ import { Card } from '../../components/Card'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { User } from '../../types/user'
 import { Edit } from '@mui/icons-material'
+import { users } from '../../api/users'
+import { useContext } from 'react'
+import { AlertContext } from '../../context/AlertContext'
+import axios from 'axios'
 
 export const ProfileFormSchema = z
   .object({
@@ -48,12 +52,16 @@ export const ProfileFormSchema = z
       })
       .regex(/(?=.*[!@#$%^&*(),.?":{}|<>])/, {
         message: 'A senha deve conter pelo menos um símbolo especial',
-      }),
+      })
+      .optional()
+      .or(z.literal('')),
 
     repeat_password: z
       .string()
       .trim()
-      .min(1, { message: 'Este campo não pode ficar vazio' }),
+      .min(1, { message: 'Este campo não pode ficar vazio' })
+      .optional()
+      .or(z.literal('')),
 
     password: z
       .string()
@@ -69,21 +77,25 @@ export const ProfileFormSchema = z
         message: 'A senha deve conter pelo menos um símbolo especial',
       }),
   })
-  .refine((data) => data.new_password === data.repeat_password, {
-    path: ['repeat_password'],
-    message: 'As senhas não coincidem',
-  })
+  .refine(
+    (data) => !data.new_password || data.new_password === data.repeat_password,
+    {
+      path: ['repeat_password'],
+      message: 'As senhas não coincidem',
+    },
+  )
 
 type ProfileFormSchemaType = z.infer<typeof ProfileFormSchema>
 
 export function Profile() {
   const queryClient = useQueryClient()
   const user = queryClient.getQueryData<User>(['user'])
+  const { error, success } = useContext(AlertContext)
 
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { errors },
     reset,
   } = useForm<ProfileFormSchemaType>({
     resolver: zodResolver(ProfileFormSchema),
@@ -91,14 +103,40 @@ export function Profile() {
       email: user ? user.email : '',
       name: user ? user.name : '',
       last_name: user ? user.last_name : '',
-      new_password: '',
-      repeat_password: '',
       password: '',
     },
   })
 
+  const { mutateAsync: updateProfileFn, isPending } = useMutation({
+    mutationFn: async ({
+      name,
+      last_name,
+      email,
+      password,
+      new_password,
+    }: ProfileFormSchemaType) =>
+      await users.updateProfile({
+        name,
+        last_name,
+        email,
+        password,
+        new_password,
+      }),
+    onSuccess: (data) => {
+      queryClient.setQueryData<User>(['user'], (oldUser) =>
+        oldUser ? data.user : oldUser,
+      )
+      success(data.message)
+    },
+    onError: (e) => {
+      if (axios.isAxiosError(e)) return error(e.response?.data.message)
+
+      error('Algo não ocorreu bem')
+    },
+  })
+
   async function handleSubmitForm(data: ProfileFormSchemaType) {
-    console.log(data)
+    await updateProfileFn(data)
     reset()
   }
 
@@ -110,6 +148,7 @@ export function Profile() {
       minWidth={300}
       padding={4}
       gap={2}
+      overflow="auto"
     >
       <Box display="flex" justifyContent="center">
         <Badge
@@ -123,14 +162,14 @@ export function Profile() {
           }
         >
           <Avatar
+            alt={user?.name}
+            src={user?.avatar_url ?? ''}
             sx={{
               width: 128,
               height: 128,
               fontSize: 64,
             }}
-          >
-            B
-          </Avatar>
+          />
         </Badge>
       </Box>
       <Box
@@ -148,7 +187,6 @@ export function Profile() {
             id="name"
             type="name"
             autoFocus
-            required
             fullWidth
             variant="outlined"
             error={!!errors.name}
@@ -163,7 +201,6 @@ export function Profile() {
             id="last_name"
             type="last_name"
             autoFocus
-            required
             fullWidth
             variant="outlined"
             error={!!errors.last_name}
@@ -179,7 +216,6 @@ export function Profile() {
             type="email"
             placeholder="seu@email.com"
             autoFocus
-            required
             fullWidth
             variant="outlined"
             error={!!errors.email}
@@ -195,7 +231,6 @@ export function Profile() {
             type="password"
             id="new_password"
             autoFocus
-            required
             fullWidth
             variant="outlined"
             error={!!errors.new_password}
@@ -211,7 +246,6 @@ export function Profile() {
             type="password"
             id="repeat_password"
             autoFocus
-            required
             fullWidth
             variant="outlined"
             error={!!errors.repeat_password}
@@ -227,7 +261,6 @@ export function Profile() {
             type="password"
             id="password"
             autoFocus
-            required
             fullWidth
             variant="outlined"
             error={!!errors.password}
@@ -240,7 +273,7 @@ export function Profile() {
           size="small"
           fullWidth
           variant="contained"
-          disabled={isSubmitting}
+          disabled={isPending}
         >
           Enviar
         </Button>

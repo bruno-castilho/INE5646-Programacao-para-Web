@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   IconButton,
   ListItemIcon,
@@ -8,14 +9,35 @@ import {
   Typography,
   useColorScheme,
 } from '@mui/material'
-import AccountCircle from '@mui/icons-material/AccountCircle'
-import { useState } from 'react'
+
+import { useContext, useState } from 'react'
 import { DarkMode, LightMode, Logout, Person } from '@mui/icons-material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { User } from '../../../../types/user'
+import { queryClient } from '../../../../lib/react-query'
+import { useMutation } from '@tanstack/react-query'
+import { authenticate } from '../../../../api/authenticate'
+import { AlertContext } from '../../../../context/AlertContext'
+import axios from 'axios'
 
 export function UserMenu() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const { mode, systemMode, setMode } = useColorScheme()
+  const user = queryClient.getQueryData<User>(['user'])
+  const { error, success } = useContext(AlertContext)
+  const navigate = useNavigate()
+
+  const { mutateAsync: logoutFn, isPending } = useMutation({
+    mutationFn: async () => await authenticate.logout(),
+    onSuccess: (data) => {
+      success(data.message)
+    },
+    onError: (e) => {
+      if (axios.isAxiosError(e)) return error(e.response?.data.message)
+
+      error('Algo não ocorreu bem')
+    },
+  })
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -30,8 +52,9 @@ export function UserMenu() {
     setAnchorElUser(null)
   }
 
-  function handleLogout() {
-    console.log('logout')
+  async function handleLogout() {
+    await logoutFn()
+    navigate('/login')
   }
 
   return (
@@ -41,7 +64,7 @@ export function UserMenu() {
           onClick={handleOpenUserMenu}
           sx={{ p: 0, color: 'text.primary' }}
         >
-          <AccountCircle />
+          <Avatar alt={user?.name} src={user?.avatar_url ?? ''} />
         </IconButton>
       </Tooltip>
       <Menu
@@ -83,7 +106,7 @@ export function UserMenu() {
           </MenuItem>
         )}
 
-        <MenuItem onClick={handleLogout}>
+        <MenuItem onClick={handleLogout} disabled={isPending}>
           <ListItemIcon>
             <Logout fontSize="small" color="primary" />
           </ListItemIcon>

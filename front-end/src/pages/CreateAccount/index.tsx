@@ -10,12 +10,12 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
-import { Authenticate } from '../../api/authenticate'
 import { useContext } from 'react'
 import { AlertContext } from '../../context/AlertContext'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { Card } from '../../components/Card'
+import { users } from '../../api/users'
 
 export const CreateAccountFormSchema = z
   .object({
@@ -83,7 +83,7 @@ export function CreateAccount() {
       email,
       password,
     }: CreateAccountFormSchemaType) =>
-      await Authenticate.register({ name, last_name, email, password }),
+      await users.register({ name, last_name, email, password }),
     onSuccess: (data) => {
       success(data.message)
     },

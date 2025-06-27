@@ -1,28 +1,17 @@
+import { AxiosInstance } from 'axios'
 import { api } from '../lib/axios'
 import { User } from '../types/user'
 
-interface AuthenticateRegisterParams {
-  name: string
-  last_name: string
-  email: string
-  password: string
-}
-
-interface AuthenticateLoginParams {
-  email: string
-  password: string
-}
-
 export class Authenticate {
-  static async register({
-    name,
-    email,
-    last_name,
-    password,
-  }: AuthenticateRegisterParams): Promise<{ message: string }> {
-    const response = await api.post('/authenticate/register', {
-      name,
-      last_name,
+  constructor(private readonly api: AxiosInstance) {}
+
+  async login(params: {
+    email: string
+    password: string
+  }): Promise<{ user: User; message: string }> {
+    const { email, password } = params
+
+    const response = await this.api.post('/authenticate/login', {
       email,
       password,
     })
@@ -30,21 +19,17 @@ export class Authenticate {
     return response.data
   }
 
-  static async login({
-    email,
-    password,
-  }: AuthenticateLoginParams): Promise<{ user: User; message: string }> {
-    const response = await api.post('/authenticate/login', {
-      email,
-      password,
-    })
+  async logged(): Promise<{ user: User; message: string }> {
+    const response = await this.api.get('/authenticate/logged')
 
     return response.data
   }
 
-  static async logged(): Promise<{ user: User; message: string }> {
-    const response = await api.get('/authenticate/logged')
+  async logout(): Promise<{ message: string }> {
+    const response = await this.api.post('/authenticate/logout')
 
     return response.data
   }
 }
+
+export const authenticate = new Authenticate(api)

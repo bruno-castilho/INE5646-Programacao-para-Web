@@ -3,6 +3,7 @@
 /node_modules
 /build
 
+
 # Logs
 logs
 *.log
@@ -47,6 +48,7 @@ lerna-debug.log*
 .tmp
 
 # Runtime data
+files
 pids
 *.pid
 *.seed

@@ -4,7 +4,7 @@ import { Box } from '@mui/material'
 import { useContext } from 'react'
 import { AlertContext } from '../../context/AlertContext'
 import { useQuery } from '@tanstack/react-query'
-import { Authenticate } from '../../api/authenticate'
+import { authenticate } from '../../api/authenticate'
 import { Loading } from '../../components/Loading'
 
 export function DefaultLayout() {
@@ -17,7 +17,7 @@ export function DefaultLayout() {
   } = useQuery({
     queryKey: ['user'],
     queryFn: async () => {
-      const { user, message } = await Authenticate.logged()
+      const { user, message } = await authenticate.logged()
       success(message)
       return user
     },

@@ -18,7 +18,7 @@ import axios from 'axios'
 
 import { Link, useNavigate } from 'react-router-dom'
 import { AlertContext } from '../../../context/AlertContext'
-import { Authenticate } from '../../../api/authenticate'
+import { authenticate } from '../../../api/authenticate'
 import { queryClient } from '../../../lib/react-query'
 import { Card } from '../../../components/Card'
 import ForgotPassword from '../../../components/ForgotPassword'
@@ -58,7 +58,7 @@ export function SignInCard() {
 
   const { mutateAsync: loginFn, isPending } = useMutation({
     mutationFn: async ({ email, password }: SignInFormSchemaType) =>
-      await Authenticate.login({ email, password }),
+      await authenticate.login({ email, password }),
     onSuccess: (data) => {
       success(data.message)
       queryClient.setQueryData(['user'], data.user)

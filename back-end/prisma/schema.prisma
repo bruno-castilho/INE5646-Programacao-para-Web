@@ -20,6 +20,43 @@ model User {
   email         String   @unique
   password_hash String
   created_at    DateTime @default(now())
+  avatar_url    String?  @default("")
+
+  personal_files File[]       @relation("PersonalFiles")
+  updated_files  File[]       @relation("UpdatedBy")
+  shared_files   SharedFile[]
 
   @@map("users")
+}
+
+model File {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  private Boolean @default(true)
+  type    String  @default("text/php")
+
+  created_by_id String @db.ObjectId
+  created_by    User   @relation("PersonalFiles", fields: [created_by_id], references: [id])
+
+  updated_by_id String @db.ObjectId
+  updated_by    User   @relation("UpdatedBy", fields: [updated_by_id], references: [id])
+
+  shared_with SharedFile[]
+
+  updated_at DateTime
+  created_at DateTime @default(now())
+}
+
+model SharedFile {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  user_id String @db.ObjectId
+  file_id String @db.ObjectId
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  file File @relation(fields: [file_id], references: [id], onDelete: Cascade)
+
+  shared_at DateTime @default(now())
+
+  @@unique([user_id, file_id])
 }
