@@ -5,7 +5,7 @@ const envSchema = z.object({
   ORIGIN: z.string().default('*'),
   NODE_ENV: z.enum(['dev', 'test', 'production']).default('dev'),
   PORT: z.coerce.number().default(3000),
-  SECRET: z.string(),
+  JWT_SECRET: z.string(),
   LOCAL_FILE_SYSTEM_SOURCE_PATH: z.string().default(`${process.cwd()}/files`),
 })
 

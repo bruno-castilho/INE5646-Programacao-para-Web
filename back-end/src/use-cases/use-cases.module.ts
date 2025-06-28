@@ -14,7 +14,7 @@ import { env } from 'src/env'
     RepositoriesModule,
     FileSystemModule,
     JwtModule.register({
-      secret: env.SECRET,
+      secret: env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
   ],

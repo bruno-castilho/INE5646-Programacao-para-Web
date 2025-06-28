@@ -1,38 +1,43 @@
 services:
   mongo:
     image: mongo:6
-    hostname: mongo
+    container_name: mongo
     command: ["--replSet", "rs0", "--bind_ip_all"]
     volumes:
-      - ./mongo-data:/data/db
+      - /app/mongo:/data/db
   back-end:
     build: ../back-end
     hostname: backend
     environment:
       NODE_ENV: "production"
-      DATABASE_URL: "mongodb://mongo:27017/phpeditor"
-      SECRET: "yout-secret"
+      DATABASE_URL: "${DATABASE_URL}"
+      JWT_SECRET: "${JWT_SECRET}"
+      ORIGIN: "${DOMAIN}"
     depends_on:
         - mongo
+    volumes:    
+      - /app/files:/app/files      
+      - /var/run/docker.sock:/var/run/docker.sock
+    
   front-end:
     hostname: frontend
     build:
       context: ../front-end
       args:
-        VITE_API_URL: http://phpeditor.bruno.s.c.vms.ufsc.br:8080/api
+        VITE_API_URL: "${DOMAIN}/api"
+        VITE_SOCKET_URL: "${DOMAIN}"
     depends_on:
         - back-end
   nginx:    
       image: nginx:stable-alpine
       restart: always
       ports:
-        - "8080:8080"                
+        - "443:443"                
       volumes:          
         - ./nginx/config:/etc/nginx/conf.d/
         - ./nginx/logs:/var/log/nginx/ 
-
+        - ./nginx/keys:/etc/nginx/certs/
       depends_on:
         - front-end
         - back-end
         - mongo
-  

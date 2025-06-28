@@ -31,7 +31,35 @@ docker compose up -d
 
 ---
 
-### 2. Configurar o ambiente do back-end
+### 2. Inicializar o replica set do MongoDB
+
+Execute o seguinte comando para acessar o container do Mongo:
+
+```bash
+docker exec -it mongo mongosh
+```
+
+Dentro do terminal interativo do MongoDB, execute o comando abaixo:
+
+```js
+rs.initiate({
+  _id: "rs0",
+  members: [
+    { _id: 0, host: "localhost:27017" }
+  ]
+})
+
+```
+
+Depois, digite `exit` para sair do prompt:
+
+```bash
+exit
+```
+
+---
+
+### 3. Configurar o ambiente do back-end
 
 Entre na pasta do back-end do projeto:
 
@@ -66,7 +94,7 @@ npm run start:dev
 
 ---
 
-### 3. Configurar e iniciar o front-end
+### 4. Configurar e iniciar o front-end
 
 Em um **novo terminal**, siga os passos abaixo:
 

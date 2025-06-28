@@ -17,7 +17,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { files } from '../../../api/files'
 import { z } from 'zod'
-import { File } from '../../../types/file'
+import { File } from '../../../@types/file'
 
 interface SharedWithMeTableRowProps {
   file: File

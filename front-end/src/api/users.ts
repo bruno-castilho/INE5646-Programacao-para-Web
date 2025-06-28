@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios'
 import { api } from '../lib/axios'
-import { User } from '../types/user'
+import { User } from '../@types/user'
 
 export class Users {
   constructor(private readonly api: AxiosInstance) {}

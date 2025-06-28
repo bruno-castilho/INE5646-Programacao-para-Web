@@ -13,7 +13,7 @@ import {
 import { useContext, useState } from 'react'
 import { DarkMode, LightMode, Logout, Person } from '@mui/icons-material'
 import { Link, useNavigate } from 'react-router-dom'
-import { User } from '../../../../types/user'
+import { User } from '../../../../@types/user'
 import { queryClient } from '../../../../lib/react-query'
 import { useMutation } from '@tanstack/react-query'
 import { authenticate } from '../../../../api/authenticate'
