@@ -31,7 +31,7 @@ cp .env.template .env
 **Antes de subir os containers, adicione os arquivos de certificado SSL.**  
 Coloque o certificado e a chave privada na pasta `./nginx/keys` com os seguintes nomes:
 
-- `certificado.crt` – o certificado SSL
+- `certificado.crt` – o certificado SSL  
 - `chave.key` – a chave privada
 
 O diretório deverá ficar assim:
@@ -75,6 +75,16 @@ Depois, digite `exit` para sair do prompt:
 
 ```bash
 exit
+```
+
+---
+
+### 3. Baixar a imagem do PHP 8.2 CLI
+
+Como último passo, faça o pull da imagem PHP oficial para a execução dos scripts:
+
+```bash
+docker pull php:8.2-cli
 ```
 
 ---
