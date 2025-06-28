@@ -124,6 +124,16 @@ npm run dev
 
 ---
 
+### 5. Baixar a imagem do PHP 8.2 CLI
+
+Como último passo, faça o pull da imagem PHP oficial para a execução dos scripts:
+
+```bash
+docker pull php:8.2-cli
+```
+
+---
+
 ## ✅ Pronto
 
 O ambiente de desenvolvimento estará configurado e rodando localmente com o MongoDB, o back-end e o front-end integrados.
