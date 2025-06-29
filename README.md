@@ -1,36 +1,36 @@
 AP
 - [x] Aplicação acessível apenas com autenticação 
 - [x] Cadastro de novos usuários 
-- [ ] Atualização de cadastro (na autenticação) 
+- [x] Atualização de cadastro (na autenticação) 
 - [x] Construção de base de dados (MongoDB) no back-end 
-- [ ] Função de compartilhamento de dados entre usuários 
-- [ ] Front-end responsivo (desktop e mobile) 
-- [ ] User-side: funcionalidades 
+- [x] Função de compartilhamento de dados entre usuários 
+- [x] Front-end responsivo (desktop e mobile) 
+- [x] User-side: funcionalidades 
 - [x] Front-end 
 - [x] Back-end 
-- [ ] Aspectos de segurança 
-- [ ]  - Testes de vulnerabilidade 
-- [ ]  - Soluções de segurança 
-- [ ] Apresentação no server HTTP (framework reveal.js) 
+- [x] Aspectos de segurança 
+- [x]  - Testes de vulnerabilidade 
+- [x]  - Soluções de segurança 
+- [x] Apresentação no server HTTP (framework reveal.js) 
 
 EP
-- [ ] Resumo
-- [ ] Introdução                                        
+- [x] Resumo
+- [x] Introdução                                        
 - [x]  - Motivação
-- [ ]  - Problema
-- [ ]  - Trabalhos relacionados
+- [x]  - Problema
+- [x]  - Trabalhos relacionados
 - [x]  - Contribuição do trabalho
-- [ ]  - Descrição da organização do trabalho
-- [ ] Fundamentação teórica
-- [ ] Materiais e métodos
-- [ ]  - Metodologia
-- [ ]  - Discussão das principais partes de código
-- [ ]  - Roteiro detalhado de pacotes
-- [ ]  - Roteiro detalhado de instalação
-- [ ] Resultados
-- [ ]  - Discussão dos resultados obtidos
-- [ ]  - Discussão sobre aspectos de segurança
-- [ ]    - Testes de vulnerabilidade/intrusão
-- [ ]    - Soluções de segurança
-- [ ] Conclusão(ões)
-- [ ] Referências
+- [x]  - Descrição da organização do trabalho
+- [x] Fundamentação teórica
+- [x] Materiais e métodos
+- [x]  - Metodologia
+- [x]  - Discussão das principais partes de código
+- [x]  - Roteiro detalhado de pacotes
+- [x]  - Roteiro detalhado de instalação
+- [x] Resultados
+- [x]  - Discussão dos resultados obtidos
+- [x]  - Discussão sobre aspectos de segurança
+- [x]    - Testes de vulnerabilidade/intrusão
+- [x]    - Soluções de segurança
+- [x] Conclusão(ões)
+- [x] Referências
