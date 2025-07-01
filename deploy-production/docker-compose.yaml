@@ -1,12 +1,14 @@
 services:
   mongo:
     image: mongo:6
+    restart: always
     container_name: mongo
     command: ["--replSet", "rs0", "--bind_ip_all"]
     volumes:
       - /app/mongo:/data/db
   back-end:
     build: ../back-end
+    restart: always
     hostname: backend
     environment:
       NODE_ENV: "production"
@@ -21,6 +23,7 @@ services:
     
   front-end:
     hostname: frontend
+    restart: always
     build:
       context: ../front-end
       args:
