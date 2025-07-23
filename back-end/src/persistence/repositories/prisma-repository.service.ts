@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { File, Prisma, SharedFile, User } from '@prisma/client'
 import { PrismaService } from 'src/lib/prisma.service'
+import {
+  FilesRepository,
+  Repository,
+  SharedFilesRepository,
+  UsersRepository,
+} from './repository'
 
 class PrismaRepositoryService<
   Model,
@@ -11,7 +17,18 @@ class PrismaRepositoryService<
   CreateInput,
   UpdateInput,
   OrderByInput,
-> {
+> implements
+    Repository<
+      Model,
+      Omit,
+      Include,
+      WhereUniqueInput,
+      WhereInput,
+      CreateInput,
+      UpdateInput,
+      OrderByInput
+    >
+{
   constructor(
     private prisma: PrismaService,
     private model: string,
@@ -99,48 +116,57 @@ class PrismaRepositoryService<
 }
 
 @Injectable()
-export class PrismaUsersRepository extends PrismaRepositoryService<
-  User,
-  Prisma.UserOmit,
-  Prisma.UserInclude,
-  Prisma.UserWhereUniqueInput,
-  Prisma.UserWhereInput,
-  Prisma.UserCreateInput,
-  Prisma.UserUpdateInput,
-  Prisma.UserOrderByWithRelationInput
-> {
+export class PrismaUsersRepository
+  extends PrismaRepositoryService<
+    User,
+    Prisma.UserOmit,
+    Prisma.UserInclude,
+    Prisma.UserWhereUniqueInput,
+    Prisma.UserWhereInput,
+    Prisma.UserCreateInput,
+    Prisma.UserUpdateInput,
+    Prisma.UserOrderByWithRelationInput
+  >
+  implements UsersRepository
+{
   constructor(prisma: PrismaService) {
     super(prisma, 'user')
   }
 }
 
 @Injectable()
-export class PrismaFilesRepository extends PrismaRepositoryService<
-  File,
-  Prisma.FileOmit,
-  Prisma.FileInclude,
-  Prisma.FileWhereUniqueInput,
-  Prisma.FileWhereInput,
-  Prisma.FileCreateInput,
-  Prisma.FileUpdateInput,
-  Prisma.FileOrderByWithRelationInput
-> {
+export class PrismaFilesRepository
+  extends PrismaRepositoryService<
+    File,
+    Prisma.FileOmit,
+    Prisma.FileInclude,
+    Prisma.FileWhereUniqueInput,
+    Prisma.FileWhereInput,
+    Prisma.FileCreateInput,
+    Prisma.FileUpdateInput,
+    Prisma.FileOrderByWithRelationInput
+  >
+  implements FilesRepository
+{
   constructor(prisma: PrismaService) {
     super(prisma, 'file')
   }
 }
 
 @Injectable()
-export class PrismaSharedFilesRepository extends PrismaRepositoryService<
-  SharedFile,
-  Prisma.SharedFileOmit,
-  Prisma.SharedFileInclude,
-  Prisma.SharedFileWhereUniqueInput,
-  Prisma.SharedFileWhereInput,
-  Prisma.SharedFileCreateInput,
-  Prisma.SharedFileUpdateInput,
-  Prisma.SharedFileOrderByWithRelationInput
-> {
+export class PrismaSharedFilesRepository
+  extends PrismaRepositoryService<
+    SharedFile,
+    Prisma.SharedFileOmit,
+    Prisma.SharedFileInclude,
+    Prisma.SharedFileWhereUniqueInput,
+    Prisma.SharedFileWhereInput,
+    Prisma.SharedFileCreateInput,
+    Prisma.SharedFileUpdateInput,
+    Prisma.SharedFileOrderByWithRelationInput
+  >
+  implements SharedFilesRepository
+{
   constructor(prisma: PrismaService) {
     super(prisma, 'sharedFile')
   }

@@ -1,12 +1,6 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { env } from 'src/env'
 import { LocalFileSystem } from 'src/persistence/file-system/local-file-system.service'
-
-import {
-  PrismaFilesRepository,
-  PrismaSharedFilesRepository,
-  PrismaUsersRepository,
-} from 'src/persistence/repositories/prisma-repository.service'
 import { FileDoesntExistError } from './errors/file-doesnt-exist-error'
 import { NotFileOwnerError } from './errors/not-file-owner-error'
 import { UserDoesntExistError } from './errors/user-doesnt-exist-error'
@@ -14,14 +8,26 @@ import { FileOwnerError } from './errors/file-owner-error'
 import { UserAlreadyHasAccessToTheFile } from './errors/user-already-has-access-to-the-file'
 import { UserDoesntHasAccessToTheFile } from './errors/user-doesnt-has-access-to-the-file'
 import { DockerService } from 'src/lib/dockernode.service'
+import {
+  FILES_REPOSITORY,
+  SHARED_FILES_REPOSITORY,
+  USERS_REPOSITORY,
+} from 'src/persistence/repositories/repositories.module'
+import {
+  FilesRepository,
+  SharedFilesRepository,
+  UsersRepository,
+} from 'src/persistence/repositories/repository'
 
 @Injectable()
 export class PHPScriptUseCases {
   constructor(
-    private filesRepository: PrismaFilesRepository,
+    @Inject(FILES_REPOSITORY)
+    private filesRepository: FilesRepository,
     private localFileSystem: LocalFileSystem,
-    private sharedFilesRepository: PrismaSharedFilesRepository,
-    private usersRepository: PrismaUsersRepository,
+    @Inject(SHARED_FILES_REPOSITORY)
+    private sharedFilesRepository: SharedFilesRepository,
+    @Inject(USERS_REPOSITORY) private usersRepository: UsersRepository,
     private docker: DockerService,
   ) {}
 

@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaUsersRepository } from 'src/persistence/repositories/prisma-repository.service'
+import { Inject, Injectable } from '@nestjs/common'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 import { compare } from 'bcryptjs'
 import { JwtService } from '@nestjs/jwt'
 import { UserDoesntExistError } from './errors/user-doesnt-exist-error'
+import { USERS_REPOSITORY } from 'src/persistence/repositories/repositories.module'
+import { UsersRepository } from 'src/persistence/repositories/repository'
 
 @Injectable()
 export class AuthenticateUseCases {
   constructor(
-    private usersRepository: PrismaUsersRepository,
+    @Inject(USERS_REPOSITORY) private usersRepository: UsersRepository,
     private readonly jwtService: JwtService,
   ) {}
 
