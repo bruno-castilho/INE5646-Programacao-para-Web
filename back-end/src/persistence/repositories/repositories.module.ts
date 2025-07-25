@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common'
-import {
-  PrismaFilesRepository,
-  PrismaSharedFilesRepository,
-  PrismaUsersRepository,
-} from './prisma-repository.service'
 import { PrismaService } from 'src/lib/prisma.service'
+import { PrismaUsersRepository } from './prisma/prisma-users-repository.service'
+import { PrismaFilesRepository } from './prisma/prisma-files-repository.service'
+import { PrismaSharedFilesRepository } from './prisma/prisma-shared-files-repository.service'
 
 export const USERS_REPOSITORY = Symbol('USERS_REPOSITORY')
 export const FILES_REPOSITORY = Symbol('FILES_REPOSITORY')

@@ -13,22 +13,21 @@ import {
   SHARED_FILES_REPOSITORY,
   USERS_REPOSITORY,
 } from 'src/persistence/repositories/repositories.module'
-import {
-  FilesRepository,
-  SharedFilesRepository,
-  UsersRepository,
-} from 'src/persistence/repositories/repository'
+
+import { UsersRepository } from 'src/persistence/repositories/interfaces/users-repository'
+import { FilesRepository } from 'src/persistence/repositories/interfaces/files-repository'
+import { SharedFilesRepository } from 'src/persistence/repositories/interfaces/shared-files-repository'
 
 @Injectable()
 export class PHPScriptUseCases {
   constructor(
+    private docker: DockerService,
     @Inject(FILES_REPOSITORY)
     private filesRepository: FilesRepository,
     private localFileSystem: LocalFileSystem,
     @Inject(SHARED_FILES_REPOSITORY)
     private sharedFilesRepository: SharedFilesRepository,
     @Inject(USERS_REPOSITORY) private usersRepository: UsersRepository,
-    private docker: DockerService,
   ) {}
 
   async runPHPScript(params: { clientId: string; script: string }) {
@@ -49,7 +48,7 @@ export class PHPScriptUseCases {
       WorkingDir: '/app',
       HostConfig: {
         Binds: [`${env.LOCAL_FILE_SYSTEM_SOURCE_PATH}/tmp/${clientId}:/app`],
-        Memory: 104857600, // Limita a 100 MB
+        Memory: 104857600, // Limit 100 MB
         AutoRemove: true,
       },
       Cmd: ['sh', '-c', 'php /app/script.php > /app/file.logs 2>&1'],
@@ -95,15 +94,9 @@ export class PHPScriptUseCases {
       data: {
         name,
         type,
-        private: isPrivate,
-        created_by: {
-          connect: { id: userId },
-        },
-        updated_by: {
-          connect: { id: userId },
-        },
-        updated_at: new Date(),
-        created_at: new Date(),
+        isPrivate,
+        created_by: userId,
+        updated_by: userId,
       },
     })
 
@@ -126,23 +119,19 @@ export class PHPScriptUseCases {
   }) {
     const { userId, name, fileId, fileContent } = params
 
-    const file = await this.filesRepository.findUnique({
-      where: {
-        id: fileId,
-      },
+    const file = await this.filesRepository.findById({
+      fileId,
     })
 
     if (!file) throw new FileDoesntExistError()
 
     if (file.created_by_id !== userId) {
-      const sharedFile = await this.sharedFilesRepository.findUnique({
-        where: {
-          user_id_file_id: {
-            file_id: fileId,
-            user_id: userId,
-          },
+      const sharedFile = await this.sharedFilesRepository.findByUserIdAndFileId(
+        {
+          fileId,
+          userId,
         },
-      })
+      )
 
       if (!sharedFile) throw new UserDoesntHasAccessToTheFile()
     }
@@ -156,24 +145,17 @@ export class PHPScriptUseCases {
     await this.filesRepository.update({
       data: {
         name,
-        updated_at: new Date(),
-        updated_by: {
-          connect: { id: userId },
-        },
+        updated_by: userId,
       },
-      where: {
-        id: fileId,
-      },
+      fileId,
     })
   }
 
   async removeFile(params: { userId: string; fileId: string }) {
     const { userId, fileId } = params
 
-    const file = await this.filesRepository.findUnique({
-      where: {
-        id: fileId,
-      },
+    const file = await this.filesRepository.findById({
+      fileId,
     })
 
     if (!file) throw new FileDoesntExistError()
@@ -186,64 +168,38 @@ export class PHPScriptUseCases {
     })
 
     await this.filesRepository.delete({
-      where: {
-        id: fileId,
-      },
+      fileId,
     })
   }
 
   async shareFile(params: { fileId: string; userId: string; email: string }) {
     const { fileId, userId, email } = params
 
-    const file = await this.filesRepository.findUnique({
-      where: {
-        id: fileId,
-      },
+    const file = await this.filesRepository.findById({
+      fileId,
     })
 
     if (!file) throw new FileDoesntExistError()
 
     if (file.created_by_id !== userId) throw new NotFileOwnerError()
 
-    const user = await this.usersRepository.findUnique({ where: { email } })
+    const user = await this.usersRepository.findByEmail({ email })
 
-    if (!user) throw new UserDoesntExistError()
+    if (!user?.id) throw new UserDoesntExistError()
 
     if (user.id === userId) throw new FileOwnerError()
 
-    let sharedFile = await this.sharedFilesRepository.findUnique({
-      where: {
-        user_id_file_id: {
-          user_id: user.id,
-          file_id: fileId,
-        },
-      },
+    let sharedFile = await this.sharedFilesRepository.findByUserIdAndFileId({
+      fileId,
+      userId: user.id,
     })
 
     if (sharedFile) throw new UserAlreadyHasAccessToTheFile()
 
     sharedFile = await this.sharedFilesRepository.create({
-      omit: {
-        id: true,
-        file_id: true,
-        user_id: true,
-      },
-      include: {
-        user: {
-          omit: {
-            password_hash: true,
-          },
-        },
-      },
       data: {
-        file: {
-          connect: {
-            id: fileId,
-          },
-        },
-        user: {
-          connect: { email },
-        },
+        fileId,
+        userId: user.id,
       },
     })
 
@@ -253,36 +209,28 @@ export class PHPScriptUseCases {
   async unshareFile(params: { fileId: string; userId: string; email: string }) {
     const { fileId, userId, email } = params
 
-    const file = await this.filesRepository.findUnique({
-      where: { id: fileId },
+    const file = await this.filesRepository.findById({
+      fileId,
     })
 
     if (!file) throw new FileDoesntExistError()
 
     if (file.created_by_id !== userId) throw new NotFileOwnerError()
 
-    const user = await this.usersRepository.findUnique({ where: { email } })
+    const user = await this.usersRepository.findByEmail({ email })
 
-    if (!user) throw new UserDoesntExistError()
+    if (!user?.id) throw new UserDoesntExistError()
 
-    const sharedFile = await this.sharedFilesRepository.findUnique({
-      where: {
-        user_id_file_id: {
-          user_id: user.id,
-          file_id: fileId,
-        },
-      },
+    const sharedFile = await this.sharedFilesRepository.findByUserIdAndFileId({
+      fileId,
+      userId: user.id,
     })
 
     if (!sharedFile) throw new UserDoesntHasAccessToTheFile()
 
     await this.sharedFilesRepository.delete({
-      where: {
-        user_id_file_id: {
-          user_id: user.id,
-          file_id: fileId,
-        },
-      },
+      fileId,
+      userId: user.id,
     })
   }
 
@@ -296,34 +244,14 @@ export class PHPScriptUseCases {
   }) {
     const { userId, query, page, perPage, orderBy, sortBy } = params
 
-    const [files, total] = await Promise.all([
-      this.filesRepository.findMany({
-        include: {
-          created_by: { select: { email: true } },
-          updated_by: { select: { email: true } },
-          shared_with: {
-            include: {
-              user: {
-                select: { id: true, email: true },
-              },
-            },
-          },
-        },
-        where: {
-          name: { contains: query },
-          created_by_id: userId,
-        },
-        orderBy: { [sortBy]: orderBy },
-        skip: (page - 1) * perPage,
-        take: perPage,
-      }),
-      this.filesRepository.count({
-        where: {
-          name: { contains: query },
-          created_by_id: userId,
-        },
-      }),
-    ])
+    const { files, total } = await this.filesRepository.searchByCreatedBy({
+      createdBy: userId,
+      orderBy,
+      page,
+      perPage,
+      query,
+      sortBy,
+    })
 
     return {
       files,
@@ -341,51 +269,14 @@ export class PHPScriptUseCases {
   }) {
     const { userId, query, page, perPage, orderBy, sortBy } = params
 
-    const [files, total] = await Promise.all([
-      this.filesRepository.findMany({
-        include: {
-          created_by: {
-            select: {
-              email: true,
-            },
-          },
-          updated_by: {
-            select: {
-              email: true,
-            },
-          },
-          shared_with: {
-            omit: { id: true, file_id: true, user_id: true },
-            include: {
-              user: {
-                omit: {
-                  password_hash: true,
-                },
-              },
-            },
-          },
-        },
-        where: {
-          name: { contains: query },
-          shared_with: {
-            some: { user_id: userId },
-          },
-        },
-        orderBy: {
-          [sortBy]: orderBy,
-        },
-        skip: (page - 1) * perPage,
-        take: perPage,
-      }),
-      this.filesRepository.count({
-        where: {
-          name: { contains: query },
-          shared_with: {
-            some: { user_id: userId },
-          },
-        },
-      }),
-    ])
+    const { files, total } = await this.filesRepository.searchBySharedWith({
+      sharedWith: userId,
+      orderBy,
+      page,
+      perPage,
+      query,
+      sortBy,
+    })
 
     return {
       files,
@@ -396,10 +287,8 @@ export class PHPScriptUseCases {
   async downloadFile(params: { userId?: string; fileId: string }) {
     const { userId, fileId } = params
 
-    const file = await this.filesRepository.findUnique({
-      where: {
-        id: fileId,
-      },
+    const file = await this.filesRepository.findById({
+      fileId,
     })
 
     if (!file) throw new FileDoesntExistError()
@@ -407,14 +296,12 @@ export class PHPScriptUseCases {
     if (file.private && file.created_by_id !== userId) {
       if (!userId) throw new UserDoesntHasAccessToTheFile()
 
-      const sharedFile = await this.sharedFilesRepository.findUnique({
-        where: {
-          user_id_file_id: {
-            file_id: fileId,
-            user_id: userId,
-          },
+      const sharedFile = await this.sharedFilesRepository.findByUserIdAndFileId(
+        {
+          fileId,
+          userId,
         },
-      })
+      )
 
       if (!sharedFile) throw new UserDoesntHasAccessToTheFile()
     }

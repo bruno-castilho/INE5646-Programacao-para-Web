@@ -4,7 +4,7 @@ import { UserAlreadyExistsError } from './errors/user-already-exists-error'
 import { UserDoesntExistError } from './errors/user-doesnt-exist-error'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 import { USERS_REPOSITORY } from 'src/persistence/repositories/repositories.module'
-import { UsersRepository } from 'src/persistence/repositories/repository'
+import { UsersRepository } from 'src/persistence/repositories/interfaces/users-repository'
 
 @Injectable()
 export class UsersUseCases {
@@ -20,10 +20,8 @@ export class UsersUseCases {
   }) {
     const { name, last_name, email, password } = params
 
-    const userWithSameEmail = await this.usersRepository.findUnique({
-      where: {
-        email,
-      },
+    const userWithSameEmail = await this.usersRepository.findByEmail({
+      email,
     })
 
     if (userWithSameEmail) throw new UserAlreadyExistsError()
@@ -31,7 +29,6 @@ export class UsersUseCases {
     const password_hash = await hash(password, 6)
 
     const user = await this.usersRepository.create({
-      omit: { password_hash: true },
       data: {
         name,
         last_name,
@@ -53,10 +50,8 @@ export class UsersUseCases {
   }) {
     const { userId, name, last_name, email, password, new_password } = params
 
-    let user = await this.usersRepository.findUnique({
-      where: {
-        id: userId,
-      },
+    const user = await this.usersRepository.findByIdWithPassword({
+      userId,
     })
 
     if (!user) throw new UserDoesntExistError()
@@ -68,11 +63,10 @@ export class UsersUseCases {
     const changedEmail = user.email !== email
 
     if (changedEmail) {
-      const userWithSameEmail = await this.usersRepository.findUnique({
-        where: {
+      const userWithSameEmail =
+        await this.usersRepository.findByEmailWithPassword({
           email,
-        },
-      })
+        })
 
       if (userWithSameEmail) throw new UserAlreadyExistsError()
     }
@@ -81,18 +75,16 @@ export class UsersUseCases {
       ? await hash(new_password, 6)
       : new_password
 
-    user = await this.usersRepository.update({
-      omit: { password_hash: true },
+    const userUpdated = await this.usersRepository.update({
+      userId,
       data: {
         name,
         last_name,
         email,
         password_hash,
       },
-      where: {
-        id: userId,
-      },
     })
-    return { user }
+
+    return { user: userUpdated }
   }
 }

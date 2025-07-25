@@ -4,7 +4,7 @@ import { compare } from 'bcryptjs'
 import { JwtService } from '@nestjs/jwt'
 import { UserDoesntExistError } from './errors/user-doesnt-exist-error'
 import { USERS_REPOSITORY } from 'src/persistence/repositories/repositories.module'
-import { UsersRepository } from 'src/persistence/repositories/repository'
+import { UsersRepository } from 'src/persistence/repositories/interfaces/users-repository'
 
 @Injectable()
 export class AuthenticateUseCases {
@@ -16,17 +16,15 @@ export class AuthenticateUseCases {
   async login(params: { email: string; password: string }) {
     const { email, password } = params
 
-    const user = await this.usersRepository.findUnique({
-      where: {
-        email,
-      },
+    const user = await this.usersRepository.findByEmailWithPassword({
+      email,
     })
 
     if (!user) throw new InvalidCredentialsError()
 
     const { password_hash, ...userWithoutPassword } = user
 
-    const doesPasswordMatches = await compare(password, password_hash)
+    const doesPasswordMatches = await compare(password, password_hash ?? '')
 
     if (!doesPasswordMatches) throw new InvalidCredentialsError()
 
@@ -43,13 +41,8 @@ export class AuthenticateUseCases {
 
     const { id } = await this.jwtService.verifyAsync(access_token)
 
-    const user = await this.usersRepository.findUnique({
-      omit: {
-        password_hash: true,
-      },
-      where: {
-        id,
-      },
+    const user = await this.usersRepository.findById({
+      userId: id,
     })
 
     if (!user) throw new UserDoesntExistError()
