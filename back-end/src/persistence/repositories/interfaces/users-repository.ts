@@ -29,7 +29,8 @@ export interface UsersRepository {
     email: string
     created_at: Date
     avatar_url: string | null
-  }>
+  } | null>
+
   findById(params: { userId: string }): Promise<{
     name: string
     id: string
