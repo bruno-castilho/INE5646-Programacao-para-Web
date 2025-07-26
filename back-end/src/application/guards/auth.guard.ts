@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
 
     if (!access_token) throw new UnauthorizedException()
 
-    const { user } = await this.authenticateUseCases.verifyAcess({
+    const { user } = await this.authenticateUseCases.verifyAccess({
       access_token,
     })
 

@@ -36,7 +36,7 @@ export class AuthenticateUseCases {
     }
   }
 
-  async logged(params: { access_token: string }) {
+  async loggedIn(params: { access_token: string }) {
     const { access_token } = params
 
     const { id } = await this.jwtService.verifyAsync(access_token)
@@ -55,13 +55,20 @@ export class AuthenticateUseCases {
     }
   }
 
-  async verifyAcess(params: { access_token: string }) {
+  async verifyAccess(params: { access_token: string }) {
     const { access_token } = params
 
     const user = await this.jwtService.verifyAsync(access_token)
 
     return {
-      user,
+      user: {
+        id: user.id,
+        name: user.name,
+        last_name: user.last_name,
+        email: user.email,
+        created_at: user.created_at,
+        avatar_url: user.avatar_url,
+      },
     }
   }
 }

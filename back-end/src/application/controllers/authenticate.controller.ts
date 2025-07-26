@@ -60,7 +60,7 @@ export class AuthenticateController {
   }
 
   @Get('logged')
-  async logged(
+  async loggedIn(
     @Req() req: FastifyRequest,
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
@@ -69,7 +69,7 @@ export class AuthenticateController {
     if (!access_token) throw new UnauthorizedException()
 
     const { user, access_token: accessToken } =
-      await this.autenticateUseCase.logged({
+      await this.autenticateUseCase.loggedIn({
         access_token,
       })
 
