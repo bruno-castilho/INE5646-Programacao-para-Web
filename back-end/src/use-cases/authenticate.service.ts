@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 import { compare } from 'bcryptjs'
-import { JwtService } from '@nestjs/jwt'
 import { UserDoesntExistError } from './errors/user-doesnt-exist-error'
 import { USERS_REPOSITORY } from 'src/persistence/repositories/repositories.module'
 import { UsersRepository } from 'src/persistence/repositories/interfaces/users-repository'
+import { JwtService } from 'src/lib/jwt.service'
 
 @Injectable()
 export class AuthenticateUseCases {
@@ -22,17 +22,17 @@ export class AuthenticateUseCases {
 
     if (!user) throw new InvalidCredentialsError()
 
-    const { password_hash, ...userWithoutPassword } = user
+    const { password_hash, ...userWithOutPassword } = user
 
     const doesPasswordMatches = await compare(password, password_hash ?? '')
 
     if (!doesPasswordMatches) throw new InvalidCredentialsError()
 
-    const access_token = await this.jwtService.signAsync(userWithoutPassword)
+    const access_token = await this.jwtService.signAsync(userWithOutPassword)
 
     return {
       access_token,
-      user: userWithoutPassword,
+      user: userWithOutPassword,
     }
   }
 
