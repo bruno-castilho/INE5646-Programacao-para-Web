@@ -33,7 +33,7 @@ export interface FilesRepository {
     created_by_id: string
     updated_by_id: string
     created_at: Date
-  }>
+  } | null>
 
   delete(params: { fileId: string }): Promise<void>
 
