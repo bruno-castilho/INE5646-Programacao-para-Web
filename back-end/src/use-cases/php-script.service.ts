@@ -6,7 +6,7 @@ import { NotFileOwnerError } from './errors/not-file-owner-error'
 import { UserDoesntExistError } from './errors/user-doesnt-exist-error'
 import { FileOwnerError } from './errors/file-owner-error'
 import { UserAlreadyHasAccessToTheFile } from './errors/user-already-has-access-to-the-file'
-import { UserDoesntHasAccessToTheFile } from './errors/user-doesnt-has-access-to-the-file'
+import { UserDoesntHaveAccessToTheFile } from './errors/user-doesnt-have-access-to-the-file'
 import { DockerService } from 'src/lib/dockernode.service'
 import {
   FILES_REPOSITORY,
@@ -22,9 +22,9 @@ import { SharedFilesRepository } from 'src/persistence/repositories/interfaces/s
 export class PHPScriptUseCases {
   constructor(
     private docker: DockerService,
+    private localFileSystem: LocalFileSystem,
     @Inject(FILES_REPOSITORY)
     private filesRepository: FilesRepository,
-    private localFileSystem: LocalFileSystem,
     @Inject(SHARED_FILES_REPOSITORY)
     private sharedFilesRepository: SharedFilesRepository,
     @Inject(USERS_REPOSITORY) private usersRepository: UsersRepository,
@@ -78,23 +78,19 @@ export class PHPScriptUseCases {
     })
 
     const container = this.docker.getContainer(clientId)
+
     await container.stop()
   }
 
   async createFile(params: {
     userId: string
     name: string
-    type?: string
-    isPrivate?: boolean
     fileContent: Buffer
   }) {
-    const { userId, name, type, isPrivate, fileContent } = params
-
+    const { userId, name, fileContent } = params
     const file = await this.filesRepository.create({
       data: {
         name,
-        type,
-        isPrivate,
         created_by: userId,
         updated_by: userId,
       },
@@ -133,7 +129,7 @@ export class PHPScriptUseCases {
         },
       )
 
-      if (!sharedFile) throw new UserDoesntHasAccessToTheFile()
+      if (!sharedFile) throw new UserDoesntHaveAccessToTheFile()
     }
 
     await this.localFileSystem.saveFile({
@@ -203,7 +199,7 @@ export class PHPScriptUseCases {
       },
     })
 
-    return sharedFile
+    return { sharedFile }
   }
 
   async unshareFile(params: { fileId: string; userId: string; email: string }) {
@@ -226,7 +222,7 @@ export class PHPScriptUseCases {
       userId: user.id,
     })
 
-    if (!sharedFile) throw new UserDoesntHasAccessToTheFile()
+    if (!sharedFile) throw new UserDoesntHaveAccessToTheFile()
 
     await this.sharedFilesRepository.delete({
       fileId,
@@ -284,7 +280,7 @@ export class PHPScriptUseCases {
     }
   }
 
-  async downloadFile(params: { userId?: string; fileId: string }) {
+  async downloadFile(params: { userId: string; fileId: string }) {
     const { userId, fileId } = params
 
     const file = await this.filesRepository.findById({
@@ -293,18 +289,13 @@ export class PHPScriptUseCases {
 
     if (!file) throw new FileDoesntExistError()
 
-    if (file.private && file.created_by_id !== userId) {
-      if (!userId) throw new UserDoesntHasAccessToTheFile()
+    const sharedFile = await this.sharedFilesRepository.findByUserIdAndFileId({
+      fileId,
+      userId,
+    })
 
-      const sharedFile = await this.sharedFilesRepository.findByUserIdAndFileId(
-        {
-          fileId,
-          userId,
-        },
-      )
-
-      if (!sharedFile) throw new UserDoesntHasAccessToTheFile()
-    }
+    if (file.created_by_id !== userId && !sharedFile)
+      throw new UserDoesntHaveAccessToTheFile()
 
     const fileContent = await this.localFileSystem.getFile({
       foldername: file.created_by_id,

@@ -143,7 +143,7 @@ export class FilesController {
 
     const { id: fileId } = paramsSchema.parse(req.params)
 
-    const sharedWith = await this.readonlyphpScriptUseCases.shareFile({
+    const { sharedFile } = await this.readonlyphpScriptUseCases.shareFile({
       email,
       fileId,
       userId,
@@ -151,7 +151,7 @@ export class FilesController {
 
     res.status(HttpStatus.CREATED)
     return {
-      shared_with: sharedWith,
+      shared_with: sharedFile,
       message: 'Arquivo compartilhado com sucesso',
     }
   }
